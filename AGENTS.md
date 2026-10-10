@@ -6,7 +6,7 @@ https://nomomarket.netlify.app/
 
 - Clone the repo
 - Run `pnpm install`
-- Run `pnpm run develop` to launch a local dev-server at http://localhost:8100/ with live reload
+- Run `pnpm run develop` to launch a local dev-server at http://localhost:12000/ with live reload
 
 If you change translations in JSON-files, then you might need to repeat `pnpm run develop`.
 
