@@ -10,12 +10,9 @@ If you change translations in JSON-files, then you might need to repeat `pnpm ru
 
 # OpenHands
 
-Login works over whitelisted mail addresses — if yours is not whitelisted yet, ask for it to be added.
-
 Issues can be submitted into OpenHands instead of being implemented by hand.
-OpenHands then works on the issue and automatically creates a merge request containing:
+OpenHands then works on the issue and automatically creates a pull request containing:
 
-- a link to the Netlify preview deployment of that branch,
 - before/after screenshots for UI changes,
 - the steps to verify the change.
 
@@ -29,15 +26,3 @@ The agent rules for this repo are in [AGENTS.md](AGENTS.md).
 # URL Parameters
 
 Available query parameters are documented in [doc/availableURLParameters.md](doc/availableURLParameters.md).
-
-# Deployment
-
-Nothing deploys to production automatically. Every deploy is a Netlify draft:
-
-- pushes to `develop` are deployed as a draft by the GitLab pipeline,
-- feature branches are deployed as a draft by OpenHands, linked from the merge request,
-- promotion to https://nomomarket.netlify.app/ happens manually in Netlify.
-
-Deployments can also be triggered manually by running `pnpm run deploy`.
-To preview deployments, log into Netlify and navigate to https://app.netlify.com/sites/nomomarket/deploys.
-Click on "Publish deploy" to publish a specific deployment to https://nomomarket.netlify.app/.
