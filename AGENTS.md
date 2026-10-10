@@ -62,5 +62,6 @@ In PR-descriptions and other places, follow this style: Short, precise, and clos
 Do not bloat up PR-descriptions by making a bunch of assumptions. An incomplete description is better than a bloated description with freely invented assumptions.
 
 What should never be missing:
-- the steps to verify the PR,
+
+- a link to a working preview-URL (remember that localhost is not reachable from the outside)
 - before/after screenshots in the PR-description if needed.
