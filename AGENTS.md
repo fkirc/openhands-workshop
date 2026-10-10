@@ -38,10 +38,19 @@ Never use a Playwright MCP server (or similar browser-automation MCP) for this â
 
 Retention of screenshots:
 Place the screenshots into the folder <before-after/name-of-issue/before-iso-date.png> and <before-after/name-of-issue/after-iso-date.png>
-Those screenshots should be committed into git after manual approval!
 
 ## Dependency Hygiene and Security
 
 No new packages!!
 If a task looks difficult, do not go for a radical goal-achieval-quest that involves downloading untrusted npm packages or Python scripts.
 Instead, make a hardstop and notify the user if a task cannot be accomplished with the existing packages and without any crazy workarounds.
+
+## Documentation style
+
+In PR-descriptions and other places, follow this style: Short, precise, and close to the prompt-author. The original writing style of the author should still be "felt" even after you translate a prompt into a PR-description.
+
+Do not bloat up PR-descriptions by making a bunch of assumptions. An incomplete description is better than a bloated description with freely invented assumptions.
+
+What should never be missing:
+- the steps to verify the PR,
+- before/after screenshots in the PR-description if needed.
