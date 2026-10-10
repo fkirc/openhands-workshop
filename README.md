@@ -8,6 +8,12 @@
 
 If you change translations in JSON-files, then you might need to repeat `pnpm run develop`.
 
+# Tech Stack
+
+- Next.js / React, all TypeScript, client-rendered
+- Tailwind CSS
+- pnpm as the package manager
+
 # OpenHands
 
 Issues can be submitted into OpenHands instead of being implemented by hand.

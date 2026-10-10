@@ -10,6 +10,12 @@ https://nomomarket.netlify.app/
 
 If you change translations in JSON-files, then you might need to repeat `pnpm run develop`.
 
+## Tech Stack
+
+- Next.js / React, TypeScript, client-rendered
+- Tailwind CSS
+- pnpm (use `pnpm`, not raw `npm`)
+
 ## UI verification (Playwright)
 The `develop` script serves on port 8100, so screenshot against `http://localhost:8100/`:
 
