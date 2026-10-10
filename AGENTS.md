@@ -12,7 +12,6 @@ If you change translations in JSON-files, then you might need to repeat `pnpm ru
 
 ## OpenHands
 
-Our OpenHands instance runs at https://openhands.nomomarket.netlify.app/.
 Login works over whitelisted mail addresses — if yours is not whitelisted yet, ask for it to be added.
 
 Issues can be submitted into OpenHands instead of being implemented by hand.
@@ -25,22 +24,6 @@ For every new chat, select the workspace `nomomarket` in the workspace selector 
 otherwise the agent starts without this repo.
 
 <img src="doc/images/openhands-new-chat.jpg" width="300"> <img src="doc/images/openhands-workspace-dropdown.jpg" width="300">
-
-## Codebase map (TypeScript)
-- Main app code lives in `src/` (`components/`, `pages/`, `data/`, `utils/`, `routes.ts`).
-- Many files in `src/pages/` are thin re-export wrappers; shared page logic is usually in `src/components/`.
-- Shared JSON shape/type declarations are in `src/data/json-structure.ts` and `declarations.d.ts`.
-
-## Architecture notes
-- App state is centralized in `src/data/redux-state.ts`; route-driven indicator switching is in `src/data/indicator-class.ts`.
-- JSON lookup mappings are in `src/data/variable-list.js` (JavaScript). Keep TypeScript changes compatible with this JS module unless a task explicitly includes migrating it.
-
-## Context-loading rules
-- Do not load JSON into context by default; load JSON only when it is required for the current task.
-
-## Build verification
-- After any non-trivial TypeScript modification, run `pnpm exec tsc`.
-- After any page modification (files under `src/pages/`), run `pnpm exec tsc`.
 
 ## UI verification (Playwright)
 The `develop` script serves on port 8100, so screenshot against `http://localhost:8100/`:
@@ -72,16 +55,11 @@ Retention of screenshots:
 Place the screenshots into the folder <before-after/name-of-issue/before-iso-date.png> and <before-after/name-of-issue/after-iso-date.png>
 Those screenshots should be committed into git after manual approval!
 
-## Change focus
-- Keep edits minimal and targeted.
-- Prefer changing canonical shared components over duplicative page wrappers when behavior should apply across routes.
-- Do not change generated output under `public/` manually, because those JSONs are served from other systems and will be overwritten frequently.
-
 ## Committing and pushing
 Never push to `develop` and never wait to be asked, even if someone is watching the session. Deliver finished work as a merge request so a human can review the diff.
 
 1. **Branch** off `develop`, never off whatever branch happens to be checked out, and fetch first so the base is current: `git fetch origin && git switch -c openhands/<short-task-slug> origin/develop`.
-2. **Verify first.** Run the checks the change calls for (`corepack pnpm exec tsc` for anything under `src/pages/`, plus the Playwright before/after screenshots for UI changes). If verification fails, stop and report — do not open an MR for unverified work.
+2. **Verify first.** Run the checks the change calls for (plus the Playwright before/after screenshots for UI changes). If verification fails, stop and report — do not open an MR for unverified work.
 3. **Commit**, including the `before-after/` screenshots for UI changes.
 4. **Open the MR.** The GitLab PAT is already in the push remote:
    ```bash
@@ -119,17 +97,3 @@ What should never be missing:
 
 Do NOT dump in a long, bloated AI-typical description of everything in detail what you did.
 Instead, write only one or two sentence per action-point together with the respective images "before" and "after".
-
-## URL Parameters
-
-Available query parameters are documented in [doc/availableURLParameters.md](doc/availableURLParameters.md).
-
-## JSON Updates
-
-Updates of JSON-files should comply with the following procedure to ensure traceability and auditability:
-
-- Replace selected JSONs within the subfolder `static`.
-- Run `./scripts/prettify_json_assets.sh` to ensure that newly added JSONs have a standardized format with readable linebreaks.
-- Optionally, edit `variable-list.js` if JSONs have been renamed or moved to a different sub-sub-folder.
-- For small changes, make a Git-commit where the deletion of old JSONs and addition of new JSONs happens within the same commit. This makes it possible to see on GitLab what has changed in a specific commit.
-- Push the Git-commit; review changes before deploying into production.
