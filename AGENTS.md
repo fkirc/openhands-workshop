@@ -8,8 +8,6 @@ https://nomomarket.netlify.app/
 - Run `pnpm install`
 - Run `pnpm run develop` to launch a local dev-server at http://localhost:12000/ with live reload
 
-If you change translations in JSON-files, then you might need to repeat `pnpm run develop`.
-
 ## Tech Stack
 
 - Next.js / React, TypeScript, client-rendered
@@ -25,7 +23,7 @@ corepack pnpm run develop
 
 If 12000 already answers, reuse it instead of starting a second server.
 
-The sandbox is remote, so `http://localhost:12000/` is NOT reachable for the user (and a preview-URL of it would not be usable). Port 12000 is pre-exposed by OpenHands under the work-host URL from the environment, so screenshot against that URL instead, e.g. `https://work-1-xbvjadjarafueilw.prod-runtime.all-hands.dev/`.
+The sandbox is remote, so `http://localhost:12000/` is NOT reachable for the user (and a preview-URL of it would not be usable). Port 12000 is pre-exposed by OpenHands under the work-host URL from the environment, so provide that preview-URL within your PRs, e.g. `https://<identifier>.prod-runtime.all-hands.dev/`.
 
 Tooling: Playwright is a devDependency; its browser binaries are not, so run `pnpm exec playwright install chromium` once if `~/.cache/ms-playwright` is empty; run its CLI directly, e.g. `pnpm exec playwright screenshot <url> <out.png>`. Only write an ad-hoc Node script when a task needs chained interactions (clicks, downloads) beyond what the CLI covers.
 
@@ -42,7 +40,7 @@ Procedure for verifying a change:
 
 If a screenshot shows the wrong state, iterate with targeted navigation or interaction only while the screenshots are still adding evidence. Stop once the goal is confirmed, or once the loop is becoming fruitless and likely to waste screenshots or tokens.
 
-Never use a Playwright MCP server (or similar browser-automation MCP) for this — always the CLI/script approach above.
+Never use a Playwright MCP server (or similar browser-automation MCP) for this — always prefer the CLI/script approach above.
 
 Retention of screenshots:
 Place the screenshots into the folder <before-after/name-of-issue/before-iso-date.png> and <before-after/name-of-issue/after-iso-date.png>
