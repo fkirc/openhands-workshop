@@ -41,13 +41,3 @@ Nothing deploys to production automatically. Every deploy is a Netlify draft:
 Deployments can also be triggered manually by running `pnpm run deploy`.
 To preview deployments, log into Netlify and navigate to https://app.netlify.com/sites/nomomarket/deploys.
 Click on "Publish deploy" to publish a specific deployment to https://nomomarket.netlify.app/.
-
-# JSON Updates
-
-Updates of JSON-files should comply with the following procedure to ensure traceability and auditability:
-
-- Replace selected JSONs within the subfolder `static`.
-- Run `./scripts/prettify_json_assets.sh` to ensure that newly added JSONs have a standardized format with readable linebreaks.
-- Optionally, edit `variable-list.js` if JSONs have been renamed or moved to a different sub-sub-folder.
-- For small changes, make a Git-commit where the deletion of old JSONs and addition of new JSONs happens within the same commit. This makes it possible to see on GitLab what has changed in a specific commit.
-- Push the Git-commit; review changes before deploying into production.
