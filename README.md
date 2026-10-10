@@ -4,7 +4,9 @@
 
 - Clone the repo
 - Run `pnpm install`
-- Run `pnpm run develop` to launch a local dev-server at http://localhost:8100/ with live reload
+- Run `pnpm run develop` to launch a local dev-server at http://localhost:12000/ with live reload
+
+The sandbox is remote, so `localhost` is not reachable from outside. Port 12000 is pre-exposed by OpenHands, so the running app is visible at the work-host URL printed in the environment, e.g. https://work-1-xbvjadjarafueilw.prod-runtime.all-hands.dev/
 
 If you change translations in JSON-files, then you might need to repeat `pnpm run develop`.
 
