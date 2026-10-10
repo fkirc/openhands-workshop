@@ -1,11 +1,11 @@
-import type { Miniapp } from "@/data/miniapps";
+import type { App } from "@/data/apps";
 import { ArrowUpRightIcon } from "./icons";
 
-interface MiniappCardProps {
-  app: Miniapp;
+interface AppCardProps {
+  app: App;
 }
 
-export function MiniappCard({ app }: MiniappCardProps) {
+export function AppCard({ app }: AppCardProps) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/70 shadow-sm ring-1 ring-white/5 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:shadow-black/40">
       <div className={`flex h-40 items-center justify-center bg-gradient-to-br ${app.cover} sm:h-44`}>
@@ -40,7 +40,7 @@ export function MiniappCard({ app }: MiniappCardProps) {
           rel="noopener noreferrer"
           className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-white transition-colors hover:text-zinc-300"
         >
-          Open miniapp
+          Open app
           <ArrowUpRightIcon className="h-4 w-4" />
         </a>
       </div>

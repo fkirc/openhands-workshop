@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nomo Market — Discover MiniApps",
-  description: "A curated marketplace of small, focused web apps.",
+  title: "Nomo Apps Marketplace",
+  description: "A marketplace of small, focused web apps.",
 };
 
 export default function RootLayout({

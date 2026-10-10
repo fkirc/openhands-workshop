@@ -1,6 +1,6 @@
 # https://nomomarket.netlify.app/
 
-A marketplace for mini-apps; inspired by the Nomo WebOn marketplace.
+A marketplace for apps; inspired by the Nomo WebOn marketplace.
 
 The workflow in this repo uses Cloud Agents (with OpenHands), with self-correcting web-dev-agents based on screenshots.
 Deliverables are made with human-inspectable before-after-screenshots and with preview-URls.

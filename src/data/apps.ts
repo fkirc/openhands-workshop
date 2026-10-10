@@ -1,16 +1,16 @@
 /**
- * Data source for the miniapp marketplace.
+ * Data source for the app marketplace.
  * Rendering lives in the React components; content lives here.
  */
 
-export interface Miniapp {
+export interface App {
   id: string;
   name: string;
-  /** Public domain of the miniapp, shown on the card and used for the link. */
+  /** Public domain of the app, shown on the card and used for the link. */
   domain: string;
   url: string;
   slogan: string;
-  /** Emoji glyph used as the miniapp icon. */
+  /** Emoji glyph used as the app icon. */
   icon: string;
   /** Tailwind gradient classes used for the card cover. */
   cover: string;
@@ -20,7 +20,7 @@ export interface Miniapp {
   popularity: number;
 }
 
-export const MINIAPPS: Miniapp[] = [
+export const APPS: App[] = [
   {
     id: "copper-cash",
     name: "Copper Cash",
@@ -37,7 +37,7 @@ export const MINIAPPS: Miniapp[] = [
     name: "HUB Live Typing",
     domain: "hubtyping.com",
     url: "https://hubtyping.com",
-    slogan: "Seamlessly type from your phone into the HUB miniapps on your desktop.",
+    slogan: "Seamlessly type from your phone into the HUB apps on your desktop.",
     icon: "⌨️",
     cover: "from-sky-500 via-blue-600 to-indigo-600",
     publishedAt: "2026-09-02",
@@ -56,6 +56,6 @@ export const MINIAPPS: Miniapp[] = [
   },
 ];
 
-export function getMiniapps(): Miniapp[] {
-  return MINIAPPS;
+export function getApps(): App[] {
+  return APPS;
 }
