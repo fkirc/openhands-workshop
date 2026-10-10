@@ -1,6 +1,6 @@
 # AGENTS.md
 
-https://gcci.earth/
+https://nomomarket.netlify.app/
 
 ## Development
 
@@ -12,7 +12,7 @@ If you change translations in JSON-files, then you might need to repeat `pnpm ru
 
 ## OpenHands
 
-Our OpenHands instance runs at https://openhands.gcci.dev/.
+Our OpenHands instance runs at https://openhands.nomomarket.netlify.app/.
 Login works over whitelisted mail addresses — if yours is not whitelisted yet, ask for it to be added.
 
 Issues can be submitted into OpenHands instead of being implemented by hand.
@@ -21,7 +21,7 @@ OpenHands then works on the issue and automatically creates a merge request cont
 - before/after screenshots for UI changes,
 - the steps to verify the change.
 
-For every new chat, select the workspace `gccivis` in the workspace selector instead of "No workspace" —
+For every new chat, select the workspace `nomomarket` in the workspace selector instead of "No workspace" —
 otherwise the agent starts without this repo.
 
 <img src="doc/images/openhands-new-chat.jpg" width="300"> <img src="doc/images/openhands-workspace-dropdown.jpg" width="300">
@@ -40,7 +40,7 @@ otherwise the agent starts without this repo.
 
 ## Build verification
 - After any non-trivial TypeScript modification, run `pnpm exec tsc`.
-- After any page modification (files under `src/pages/`), run `pnpm exec tsc && gatsby build`.
+- After any page modification (files under `src/pages/`), run `pnpm exec tsc`.
 
 ## UI verification (Playwright)
 The `develop` script serves on port 8100, so screenshot against `http://localhost:8100/`:
@@ -81,7 +81,7 @@ Those screenshots should be committed into git after manual approval!
 Never push to `develop` and never wait to be asked, even if someone is watching the session. Deliver finished work as a merge request so a human can review the diff.
 
 1. **Branch** off `develop`, never off whatever branch happens to be checked out, and fetch first so the base is current: `git fetch origin && git switch -c openhands/<short-task-slug> origin/develop`.
-2. **Verify first.** Run the checks the change calls for (`corepack pnpm exec tsc`, plus `gatsby build` for anything under `src/pages/`, plus the Playwright before/after screenshots for UI changes). If verification fails, stop and report — do not open an MR for unverified work.
+2. **Verify first.** Run the checks the change calls for (`corepack pnpm exec tsc` for anything under `src/pages/`, plus the Playwright before/after screenshots for UI changes). If verification fails, stop and report — do not open an MR for unverified work.
 3. **Commit**, including the `before-after/` screenshots for UI changes.
 4. **Open the MR.** The GitLab PAT is already in the push remote:
    ```bash
@@ -93,7 +93,7 @@ Never push to `develop` and never wait to be asked, even if someone is watching 
      --data-urlencode "title=<type>: <short summary>" \
      --data-urlencode "description=$(cat /tmp/mr-body.md)" \
      --data-urlencode "remove_source_branch=true" \
-     "https://wegcgitlab.uni-graz.at/api/v4/projects/arsclisys%2Fgcci%2Fgccivis/merge_requests" | jq -r '.web_url'
+     "https://wegcgitlab.uni-graz.at/api/v4/projects/arsclisys%2Fnomomarket%2Fnomomarket/merge_requests" | jq -r '.web_url'
    ```
 5. **Report** the MR URL in your final message.
 
@@ -133,27 +133,3 @@ Updates of JSON-files should comply with the following procedure to ensure trace
 - Optionally, edit `variable-list.js` if JSONs have been renamed or moved to a different sub-sub-folder.
 - For small changes, make a Git-commit where the deletion of old JSONs and addition of new JSONs happens within the same commit. This makes it possible to see on GitLab what has changed in a specific commit.
 - Push the Git-commit; review changes before deploying into production.
-
-## Techstack
-
-We use _React_ to build the UI and _D3.js_ to create the charts.
-
-We use _Gatsby_ as a build-system to generate static sites.
-Static site generation is helpful to optimize GCCI for search engines.
-Therefore, we deliberately chose to _not_ build a single-page-application with toolchains like create-react-app.
-
-A Gatsby Strapi boilerplate was used to bootstrap the stack. The stack includes:
-
-- [Bootstrap](https://getbootstrap.com/)
-- [Reactstrap](https://reactstrap.github.io/)
-- [Reactstrap-form-fields](https://github.com/jeremylynch/reactstrap-form-fields)
-- [Reactstrap-json-nav](https://github.com/jeremylynch/reactstrap-json-nav)
-- [React Icons](https://github.com/react-icons/react-icons)
-- [Google Tag Manager](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-plugin-google-tagmanager)
-- [gatsby-plugin-netlify](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-plugin-netlify)
-- [gatsby-plugin-google-tagmanager](https://www.gatsbyjs.org/packages/gatsby-plugin-google-tagmanager/)
-- [gatsby-plugin-facebook-pixel](https://www.gatsbyjs.org/packages/gatsby-plugin-facebook-pixel)
-- [gatsby-plugin-manifest](https://www.gatsbyjs.com/plugins/gatsby-plugin-manifest/)
-- [gatsby-plugin-styled-components](https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/)
-
-[View Gatsby Demo](https://gatsby-strapi-starter.netlify.com/)
