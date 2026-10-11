@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WheelCelebration, resumeAudio } from "./wheel-celebration";
+import { WheelShare } from "./wof-share";
 
 interface Prize {
   /** Short text drawn on the wheel. */
@@ -48,6 +49,12 @@ function polar(r: number, deg: number) {
   return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
 }
 
+/** Round to 2 decimals so server and client render byte-identical SVG coords. */
+const round2 = (p: { x: number; y: number }) => ({
+  x: Number(p.x.toFixed(2)),
+  y: Number(p.y.toFixed(2)),
+});
+
 function wedgePath(a0: number, a1: number) {
   const p0 = polar(R, a0);
   const p1 = polar(R, a1);
@@ -58,8 +65,8 @@ const WEDGES = PRIZES.map((prize, i) => {
   const a0 = i * SEG;
   const a1 = (i + 1) * SEG;
   const mid = a0 + SEG / 2;
-  const label = polar(R * 0.7, mid);
-  const icon = polar(R * 0.44, mid);
+  const label = round2(polar(R * 0.7, mid));
+  const icon = round2(polar(R * 0.44, mid));
   return { prize, path: wedgePath(a0, a1), mid, label, icon };
 });
 
@@ -302,6 +309,8 @@ export function WheelOfFortune() {
           </p>
         )}
       </div>
+
+      <WheelShare history={history} wins={wins} />
     </div>
   );
 }
