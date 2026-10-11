@@ -27,8 +27,6 @@ corepack pnpm run develop
 
 If 12000 already answers, reuse it instead of starting a second server.
 
-Use the `https://<identifier>.prod-runtime.all-hands.dev/` URL as is; `next.config.ts` already allows it.
-
 The sandbox is remote, so `http://localhost:12000/` is NOT reachable for the user (and a preview-URL of it would not be usable). Port 12000 is pre-exposed by OpenHands under the work-host URL from the environment, so provide that preview-URL within your PRs, e.g. `https://<identifier>.prod-runtime.all-hands.dev/`.
 
 Tooling: Playwright is a devDependency; its browser binaries are not, so run `pnpm exec playwright install chromium` once if `~/.cache/ms-playwright` is empty; run its CLI directly, e.g. `pnpm exec playwright screenshot <url> <out.png>`. Only write an ad-hoc Node script when a task needs chained interactions (clicks, downloads) beyond what the CLI covers.
