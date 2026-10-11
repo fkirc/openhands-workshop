@@ -128,6 +128,17 @@ export const APPS: App[] = [
     sequence: "grandpa-prank",
     tags: ["Games"],
   },
+  {
+    id: "black-spot",
+    name: "Black Spot",
+    domain: "black-spot",
+    url: "/black-spot/",
+    slogan: "Guess the pirate word before the crew runs you through!",
+    icon: "/apps/black-spot-icon.svg",
+    card: "/apps/black-spot-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 58,
+  },
 ];
 
 export function getApps(): App[] {
