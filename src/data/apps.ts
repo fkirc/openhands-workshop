@@ -22,6 +22,17 @@ export interface App {
 
 export const APPS: App[] = [
   {
+    id: "consulting-stanislava-doganova",
+    name: "Consulting Stanislava Doganova",
+    domain: "linkedin.com/in/stanislava-doganova",
+    url: "https://www.linkedin.com/in/stanislava-doganova/",
+    slogan: "Business Strategy for Creative Industries",
+    icon: "/apps/consulting-stanislava-doganova-icon.svg",
+    card: "/apps/consulting-stanislava-doganova-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 68,
+  },
+  {
     id: "nomo-snake",
     name: "Nomo Snake",
     domain: "snake.nomo.zone",
