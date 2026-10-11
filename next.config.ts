@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "work-1-xbvjadjarafueilw.prod-runtime.all-hands.dev",
     "work-2-xbvjadjarafueilw.prod-runtime.all-hands.dev",
+    "work-1-rlykyoueutylhqtr.prod-runtime.all-hands.dev",
+    "work-2-rlykyoueutylhqtr.prod-runtime.all-hands.dev",
   ],
   turbopack: {
     rules: {
@@ -15,6 +17,15 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/danube-temp",
+        destination:
+          "https://www.wien.gv.at/assets/sonderloesungen/wassertemperatur/wassertemperatur.xml",
+      },
+    ];
   },
 };
 
