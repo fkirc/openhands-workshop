@@ -36,7 +36,7 @@ export const APPS: App[] = [
     domain: "nomomarket.netlify.app/snakes-and-ladders",
     url: "/snakes-and-ladders",
     internal: true,
-    slogan: "Climb the Austrian ladders, dodge the Austrian snakes, reach 100.",
+    slogan: "Casino-lit board game for 2–4 players. Climb the ladders, dodge the snakes, reach 100.",
     icon: "/apps/snl-icon.svg",
     card: "/apps/snl-card.svg",
     publishedAt: "2026-10-11",

@@ -9,57 +9,92 @@ export interface ShareMove {
   roll: number;
   kind: MoveKind;
   square: number;
+  /** Index into the players array. */
+  player: number;
+}
+
+export interface SharePlayer {
+  name: string;
+  color: string;
+  square: number;
+  rolls: number;
+  ladders: number;
+  snakes: number;
 }
 
 interface Props {
+  players: SharePlayer[];
   moves: ShareMove[];
-  /** Furthest square reached this run. */
-  best: number;
   won: boolean;
+  winner: number | null;
   /** Squares on the board (100). */
   total: number;
 }
 
 const GLYPH: Record<MoveKind, string> = { move: "🟥", ladder: "🪜", snake: "🐍" };
-const MAX_GLYPHS = 40;
-const FINISH = "🏆";
+/** Seat markers, in the same order as the player colours. */
+export const SEAT = ["🔴", "🔵", "🟢", "🟡"];
+const MAX_GLYPHS = 30;
 
-function buildGrid(moves: ShareMove[]) {
-  const shown = moves.slice(-MAX_GLYPHS).map((m) => GLYPH[m.kind]);
-  return shown.join("");
+function gridRows(moves: ShareMove[], players: SharePlayer[]) {
+  return players.map((p, i) => {
+    const glyphs = moves
+      .filter((m) => m.player === i)
+      .slice(-MAX_GLYPHS)
+      .map((m) => GLYPH[m.kind])
+      .join("");
+    return `${SEAT[i]} ${p.name} ${glyphs || "—"}`;
+  });
 }
 
-function buildShareText(moves: ShareMove[], best: number, won: boolean, total: number, url: string) {
+function standings(players: SharePlayer[]) {
+  return [...players]
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => b.p.square - a.p.square)
+    .map(({ p, i }, rank) => `${rank + 1}. ${SEAT[i]} ${p.name} — square ${p.square}`);
+}
+
+function buildShareText(
+  players: SharePlayer[],
+  moves: ShareMove[],
+  won: boolean,
+  winner: number | null,
+  total: number,
+  url: string,
+) {
   if (moves.length === 0) {
     return [
-      "🎲🇦🇹 Austrian Snakes & Ladders",
-      "The board game where you can't lose the Austrian way of life.",
-      "I haven't rolled yet. Alpine luck is loading…",
+      "🎲🇦🇹 Austrian Snakes & Ladders — High Roller Edition",
+      `${players.length} players, one table, casino lights.`,
+      "No rolls yet. Place your chips… I mean, roll the dice.",
       "",
-      `Play free → ${url}`,
+      `Take a seat → ${url}`,
     ].join("\n");
   }
 
-  const ladders = moves.filter((m) => m.kind === "ladder").length;
-  const snakes = moves.filter((m) => m.kind === "snake").length;
-  const grid = buildGrid(moves);
+  const rows = gridRows(moves, players);
+  const board = standings(players).join("\n");
 
-  if (won) {
+  if (won && winner !== null) {
+    const w = players[winner];
     return [
-      grid,
-      `${FINISH} Austrian Snakes & Ladders — reached square ${total} in ${moves.length} rolls!`,
-      `${ladders} ladder${ladders === 1 ? "" : "s"} up, ${snakes} snake${snakes === 1 ? "" : "s"} down. Free, obviously.`,
+      rows.join("\n"),
       "",
-      `Can you climb it faster? → ${url}`,
+      `🏆 ${SEAT[winner]} ${w.name} takes the pot in ${w.rolls} rolls!`,
+      board,
+      `${w.ladders} ladder${w.ladders === 1 ? "" : "s"} up, ${w.snakes} snake${w.snakes === 1 ? "" : "s"} down. Free, obviously.`,
+      "",
+      `Beat that → ${url}`,
     ].join("\n");
   }
 
   return [
-    grid,
-    `🎲🇦🇹 Austrian Snakes & Ladders — reached square ${best}/${total} in ${moves.length} rolls.`,
-    `${ladders} ladder${ladders === 1 ? "" : "s"} up, ${snakes} snake${snakes === 1 ? "" : "s"} down. Free to play.`,
+    rows.join("\n"),
     "",
-    `Beat my run → ${url}`,
+    `🎲🇦🇹 Austrian Snakes & Ladders — in progress (${players.length} players)`,
+    board,
+    "",
+    `Pull up a chair → ${url}`,
   ].join("\n");
 }
 
@@ -98,38 +133,46 @@ function useLocationKey() {
   );
 }
 
-export function GameShare({ moves, best, won, total }: Props) {
+export function GameShare({ players, moves, won, winner, total }: Props) {
   const [status, setStatus] = useState<"idle" | "copied" | "shared" | "failed">("idle");
   const locationKey = useLocationKey();
 
-  const { origin, challengeFrom, challengeAt } = useMemo(() => {
+  const { origin, challengeFrom, challengeAt, invitedPlayers } = useMemo(() => {
     const sep = locationKey.indexOf("|");
     const o = locationKey.slice(0, sep);
     const params = new URLSearchParams(locationKey.slice(sep + 1));
     const at = params.get("challenge");
     const from = params.get("from");
+    const n = params.get("players");
+    const seats = n && Number.isFinite(Number(n)) ? Math.min(4, Math.max(2, Number(n))) : null;
     return {
       origin: o,
       challengeFrom: from ? from.slice(0, 24) : null,
       challengeAt: at && Number.isFinite(Number(at)) ? Number(at) : null,
+      invitedPlayers: seats,
     };
   }, [locationKey]);
 
   const playUrl = `${origin}/snakes-and-ladders`;
   const shareText = useMemo(
-    () => buildShareText(moves, best, won, total, playUrl),
-    [moves, best, won, total, playUrl],
+    () => buildShareText(players, moves, won, winner, total, playUrl),
+    [players, moves, won, winner, total, playUrl],
+  );
+
+  const leader = useMemo(
+    () => players.reduce((a, b) => (b.square > a.square ? b : a), players[0]),
+    [players],
   );
 
   const challengeText = useMemo(() => {
-    const target = Math.max(best, 1);
+    const target = Math.max(leader.square, 1);
     return [
-      `🎲 I dare you to beat my Austrian Snakes & Ladders run — square ${target}/${total}.`,
-      "Watch out: one wrong roll and a snake drops you right back.",
+      `🎲 I dare you to beat our Austrian Snakes & Ladders table — ${leader.name} sits on square ${target}/${total}.`,
+      "Casino lights, big dice, no mercy. One wrong roll and a snake drops you back.",
       "",
-      `Accept the challenge → ${playUrl}?challenge=${target}`,
+      `Take a seat (${players.length} players) → ${playUrl}?challenge=${target}&players=${players.length}`,
     ].join("\n");
-  }, [best, playUrl, total]);
+  }, [leader, players.length, playUrl, total]);
 
   const flash = useCallback((s: typeof status) => {
     setStatus(s);
@@ -139,7 +182,11 @@ export function GameShare({ moves, best, won, total }: Props) {
   const onShare = useCallback(async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Austrian Snakes & Ladders", text: shareText, url: playUrl });
+        await navigator.share({
+          title: "Austrian Snakes & Ladders — High Roller Edition",
+          text: shareText,
+          url: playUrl,
+        });
         flash("shared");
         return;
       } catch {
@@ -153,7 +200,6 @@ export function GameShare({ moves, best, won, total }: Props) {
     flash((await copyText(challengeText)) ? "copied" : "failed");
   }, [challengeText, flash]);
 
-  const target = Math.max(best, 1);
   const label =
     status === "copied"
       ? "Copied! Paste it anywhere."
@@ -164,7 +210,7 @@ export function GameShare({ moves, best, won, total }: Props) {
           : null;
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/50 p-5 backdrop-blur-md">
+    <div className="w-full max-w-md rounded-2xl border border-amber-300/20 bg-zinc-900/50 p-5 backdrop-blur-md">
       {challengeAt !== null && (
         <p className="mb-4 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-center text-sm text-amber-200">
           🥊 {challengeFrom ? `${challengeFrom} dares you` : "You've been dared"} to reach{" "}
@@ -173,9 +219,10 @@ export function GameShare({ moves, best, won, total }: Props) {
       )}
 
       <div className="flex items-baseline justify-between">
-        <h2 className="font-semibold text-white">Share your run</h2>
+        <h2 className="font-semibold text-white">Share the table</h2>
         <span className="text-sm text-zinc-400">
-          square {best}/{total}
+          {players.length} players
+          {invitedPlayers ? ` · invited ${invitedPlayers}` : ""}
         </span>
       </div>
 
@@ -187,9 +234,9 @@ export function GameShare({ moves, best, won, total }: Props) {
         <button
           type="button"
           onClick={onShare}
-          className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow transition hover:-translate-y-0.5 hover:bg-zinc-100"
+          className="rounded-full bg-gradient-to-b from-amber-200 to-amber-400 px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow transition hover:-translate-y-0.5 hover:from-amber-100 hover:to-amber-300"
         >
-          📤 Share my run
+          📤 Share the table
         </button>
         <button
           type="button"
@@ -205,8 +252,8 @@ export function GameShare({ moves, best, won, total }: Props) {
       </p>
 
       <p className="mt-1 text-xs text-zinc-500">
-        One glyph per roll: 🟥 a move, 🪜 a ladder up, 🐍 a snake down. The challenge link dares a
-        friend to beat square {target}.
+        One glyph per roll: 🟥 a move, 🪜 a ladder up, 🐍 a snake down. The challenge link invites a
+        friend to beat square {Math.max(leader.square, 1)}.
       </p>
     </div>
   );
