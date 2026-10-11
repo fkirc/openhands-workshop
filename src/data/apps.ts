@@ -79,6 +79,17 @@ export const APPS: App[] = [
     publishedAt: "2026-10-05",
     popularity: 62,
   },
+  {
+    id: "fifties-flipper",
+    name: "Fifties Flipper",
+    domain: "nomomarket.netlify.app/pinball",
+    url: "/pinball",
+    slogan: "Pull the plunger, light the bumpers, tilt the room!",
+    icon: "/apps/fifties-pinball-icon.svg",
+    card: "/apps/fifties-pinball-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 68,
+  },
 ];
 
 export function getApps(): App[] {
