@@ -39,9 +39,9 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
         onClick={() => setOpen((value) => !value)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/15 bg-zinc-900/70 px-4 py-2.5 text-left text-sm text-white shadow-lg ring-1 ring-white/5 backdrop-blur-md transition-colors hover:border-white/30"
+        className="flex w-full items-center justify-between gap-2 rounded-xl border border-black/15 bg-white/70 px-4 py-2.5 text-left text-sm text-zinc-900 shadow-lg ring-1 ring-black/5 backdrop-blur-md transition-colors hover:border-black/30 dark:border-white/15 dark:bg-zinc-900/70 dark:text-white dark:ring-white/5 dark:hover:border-white/30"
       >
-        <span className={selected.length ? "text-white" : "text-zinc-400"}>
+        <span className={selected.length ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}>
           {selected.length
             ? `${selected.length} tag${selected.length > 1 ? "s" : ""} selected`
             : "Filter by tags"}
@@ -53,7 +53,7 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform dark:text-zinc-400 ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         >
           <path d="m6 9 6 6 6-6" />
@@ -64,7 +64,7 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
         <ul
           role="listbox"
           aria-multiselectable="true"
-          className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-white/15 bg-zinc-900/95 p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/5 backdrop-blur-md"
+          className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-black/15 bg-white/95 p-1.5 shadow-2xl shadow-black/20 ring-1 ring-black/5 backdrop-blur-md dark:border-white/15 dark:bg-zinc-900/95 dark:shadow-black/50 dark:ring-white/5"
         >
           {TAGS.map((tag) => {
             const active = selected.includes(tag.name);
@@ -75,7 +75,7 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
                   role="option"
                   aria-selected={active}
                   onClick={() => toggleTag(tag.name)}
-                  className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-200 transition-colors hover:bg-white/10"
+                  className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-800 transition-colors hover:bg-black/5 dark:text-zinc-200 dark:hover:bg-white/10"
                 >
                   <span className="flex items-center gap-2">
                     <span
@@ -85,7 +85,7 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
                     {tag.name}
                   </span>
                   {active && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-white" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-zinc-900 dark:text-white" aria-hidden="true">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                   )}
@@ -104,7 +104,7 @@ export function TagFilter({ selected, onChange }: TagFilterProps) {
           <button
             type="button"
             onClick={() => onChange([])}
-            className="text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-200 hover:underline"
+            className="text-xs text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200"
           >
             Clear all
           </button>

@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `dark:` utilities follow the `.dark` class on <html>,
+   which the toggle (and the pre-paint script) set. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f7ecd2;
   --foreground: #2a1d05;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #120b02;
+  --foreground: #f5e6c0;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -12,13 +23,6 @@
   --font-mono: var(--font-geist-mono);
   /* ShadowTales supplies --font-shadowtales-serif inside its own layout. */
   --font-serif: var(--font-shadowtales-serif), ui-serif, Georgia, serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #120b02;
-    --foreground: #f5e6c0;
-  }
 }
 
 body {
@@ -31,6 +35,7 @@ body {
 /* Psychedelic background: hypnotic spiral + bouncy bubbles            */
 /* ------------------------------------------------------------------ */
 
+/* Gold wash (light theme). */
 .psy-stage {
   background:
     radial-gradient(120% 90% at 12% 8%, #6b4708 0%, transparent 55%),
@@ -38,6 +43,16 @@ body {
     radial-gradient(130% 110% at 50% 115%, #4a3208 0%, transparent 60%),
     radial-gradient(90% 70% at 70% 60%, #5c3f0a 0%, transparent 70%),
     #140d02;
+}
+
+/* Deep-space wash for the dark theme. */
+.dark .psy-stage {
+  background:
+    radial-gradient(120% 90% at 12% 8%, #35085c 0%, transparent 55%),
+    radial-gradient(110% 85% at 88% 12%, #06304f 0%, transparent 55%),
+    radial-gradient(130% 110% at 50% 115%, #5c0a45 0%, transparent 60%),
+    radial-gradient(90% 70% at 70% 60%, #1b0640 0%, transparent 70%),
+    #04010c;
 }
 
 /* Slowly rotating conic swirl: the hypnotizing "lore" wheel. */
@@ -109,6 +124,10 @@ body {
   font-weight: 700;
   letter-spacing: 0.42em;
   text-transform: uppercase;
+}
+
+.dark .psy-lore text {
+  fill: #ffffff;
 }
 
 /* A bouncy bubble: outer layer carries the bounce, inner the glow. */
@@ -339,6 +358,9 @@ body {
   left: 0;
   will-change: transform;
   filter: drop-shadow(0 0 12px rgba(255, 170, 60, 0.55));
+}
+.dark .rocket-body {
+  filter: drop-shadow(0 0 12px rgba(120, 200, 255, 0.6));
 }
 
 .rocket-flame {

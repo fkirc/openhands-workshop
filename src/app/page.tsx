@@ -4,6 +4,7 @@ import { Clock } from "@/components/clock";
 import { Marketplace } from "@/components/marketplace";
 import { PsychedelicBackground } from "@/components/psychedelic-bg";
 import { Rocket } from "@/components/rocket";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { WalkingCat } from "@/components/walking-cat";
 import { SpritzweinIcon } from "@/components/icons";
 import { DanubeTemperature } from "@/components/danube-temperature";
@@ -15,6 +16,7 @@ export default function Home() {
     <div className="relative flex flex-1 flex-col text-amber-50">
       <PsychedelicBackground />
       <Rocket />
+      <ThemeToggle />
       <main className="relative z-10 flex flex-1 flex-col">
         <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-10 pt-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pt-20">
           <div>
