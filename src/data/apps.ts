@@ -161,6 +161,17 @@ export const APPS: App[] = [
     publishedAt: "2026-10-11",
     popularity: 58,
   },
+  {
+    id: "shadowtales",
+    name: "ShadowTales",
+    domain: "nomomarket.netlify.app",
+    url: "/shadowtales/",
+    slogan: "Jede Geschichte verdient ein Märchen.",
+    icon: "/apps/shadowtales-icon.svg",
+    card: "/apps/shadowtales-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 88,
+  },
 ];
 
 export function getApps(): App[] {
