@@ -53,7 +53,7 @@ export const APPS: App[] = [
     card: "/apps/snape-card.svg",
     publishedAt: "2026-10-11",
     popularity: 88,
-    tags: [],
+    tags: ["Games", "Arcade"],
   },
   {
     id: "consulting-stanislava-doganova",
@@ -162,7 +162,7 @@ export const APPS: App[] = [
     card: "/apps/black-spot-card.svg",
     publishedAt: "2026-10-11",
     popularity: 58,
-    tags: [],
+    tags: ["Games", "Puzzle"],
   },
   {
     id: "shadowtales",
