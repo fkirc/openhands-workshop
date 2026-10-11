@@ -5,10 +5,6 @@ A marketplace for apps; inspired by the Nomo WebOn marketplace.
 See the [WORKSHOP_PLAN.md](WORKSHOP_PLAN.md) for the plan.  
 See the [Workshop Video](https://drive.google.com/file/d/1Uws4gHrx_hq6ryHTR6YHhq85b_0DQw63/view) as an intro-video.
 
-Apps in this marketplace:
-
-- [ShadowTales](SHADOWTALES.md) — personalisiertes, interaktives Schattentheater (`/shadowtales`).
-
 The workflow in this repo uses Cloud Agents (with OpenHands), with self-correcting web-dev-agents based on screenshots.
 Deliverables are made with human-inspectable before-after-screenshots and with preview-URls.
 
