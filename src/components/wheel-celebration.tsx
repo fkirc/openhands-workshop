@@ -72,7 +72,7 @@ function boom(ctx: AudioContext, at: number) {
   thump.stop(at + 0.45);
 }
 
-/** The whole ridiculous victory jingle. */
+/** The whole ridiculous Austrian victory jingle — a waltz, naturally. */
 export function playFanfare(muted: boolean) {
   if (muted) return;
   resumeAudio();
@@ -80,24 +80,34 @@ export function playFanfare(muted: boolean) {
   const ctx = audioCtx;
   const t = ctx.currentTime + 0.02;
 
-  // Triumphant ascending arpeggio, then a big held chord.
-  const melody = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5, 1318.51];
+  // A three-four waltz, oom-pah-pah, then a big held chord on top.
+  const melody = [523.25, 659.25, 783.99, 1046.5, 987.77, 1046.5, 1318.51];
+  const beat = 0.22;
   melody.forEach((f, i) => {
-    note(ctx, f, t + i * 0.11, 0.18, "square", 0.14);
-    note(ctx, f / 2, t + i * 0.11, 0.18, "triangle", 0.1);
+    // Oom: low root on the downbeat.
+    note(ctx, f / 4, t + i * beat * 3, beat * 0.9, "triangle", 0.16);
+    // Pah-pah: chord stabs on beats two and three.
+    [1.5, 1.25].forEach((mul, j) => {
+      note(ctx, f * mul, t + i * beat * 3 + beat * (j + 1), beat * 0.6, "square", 0.08);
+    });
+    // Lead melody riding on top.
+    note(ctx, f, t + i * beat * 3, beat * 1.4, "square", 0.12);
   });
 
-  const chordAt = t + melody.length * 0.11;
+  const chordAt = t + melody.length * beat * 3;
   [523.25, 659.25, 783.99, 1046.5].forEach((f) => {
-    note(ctx, f, chordAt, 1.1, "triangle", 0.12);
+    note(ctx, f, chordAt, 1.2, "triangle", 0.12);
   });
 
+  // Sparkle: rapid high blips, like a zither run.
   for (let i = 0; i < 14; i++) {
     note(ctx, 1568 + (i % 4) * 220, chordAt + i * 0.05, 0.08, "square", 0.06);
   }
 
+  // Booms, on the beat, for the fireworks.
   boom(ctx, t);
-  boom(ctx, t + 0.66);
+  boom(ctx, t + beat * 3);
+  boom(ctx, t + beat * 6);
   boom(ctx, chordAt + 0.1);
 }
 
@@ -129,19 +139,18 @@ interface Burst {
   kind: "firework" | "emoji" | "ring";
 }
 
+/** Red-white-red, with a few alpine accents. */
 const PALETTE = [
-  "#ff2d95",
-  "#ff7a00",
-  "#ffd400",
-  "#22e06a",
-  "#00d4ff",
-  "#7a5cff",
-  "#b14cff",
-  "#ff4d4d",
+  "#c8102e",
   "#ffffff",
+  "#c8102e",
+  "#ffffff",
+  "#e63946",
+  "#ffd400",
+  "#00b894",
 ];
 
-const EMOJI = ["🎉", "🎊", "✨", "🥳", "🏆", "🍾", "💥", "🌟"];
+const EMOJI = ["🇦🇹", "🎉", "🎊", "🍰", "☕", "🎿", "🏔️", "💥", "✨", "🍺"];
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];

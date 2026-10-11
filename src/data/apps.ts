@@ -32,11 +32,11 @@ export interface App {
 export const APPS: App[] = [
   {
     id: "wheel-of-fortune",
-    name: "Wheel of Fortune",
+    name: "Glücksrad",
     domain: "nomomarket.netlify.app/wheel",
     url: "/wheel",
     internal: true,
-    slogan: "Every spin wins something free you can actually go do.",
+    slogan: "Des Glücksrad, bei dem'd immer gwinnst — mit echten Wiener Preisen.",
     icon: "/apps/wheel-icon.svg",
     card: "/apps/wheel-card.svg",
     publishedAt: "2026-10-11",
