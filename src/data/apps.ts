@@ -22,6 +22,17 @@ export interface App {
 
 export const APPS: App[] = [
   {
+    id: "snape",
+    name: "Snape",
+    domain: "snape.nomo.zone",
+    url: "/apps/snape",
+    slogan: "The Potions Master slithers. Gobble up every potion!",
+    icon: "/apps/snape-icon.svg",
+    card: "/apps/snape-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 88,
+  },
+  {
     id: "nomo-snake",
     name: "Nomo Snake",
     domain: "snake.nomo.zone",

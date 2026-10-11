@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#3a2263"/>
+      <stop offset="0.6" stop-color="#1b1030"/>
+      <stop offset="1" stop-color="#0a0714"/>
+    </radialGradient>
+    <linearGradient id="robe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2f3f"/>
+      <stop offset="1" stop-color="#0c0e16"/>
+    </linearGradient>
+    <linearGradient id="potion" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7bff9f"/>
+      <stop offset="1" stop-color="#12a45a"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="0.5" stop-color="#c9962f"/>
+      <stop offset="1" stop-color="#7a5410"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <rect x="14" y="14" width="484" height="484" rx="86" fill="none" stroke="url(#frame)" stroke-width="10" opacity="0.85"/>
+
+  <!-- Floating bubbles -->
+  <circle cx="96" cy="120" r="12" fill="#7bff9f" opacity="0.5"/>
+  <circle cx="418" cy="150" r="9" fill="#7bff9f" opacity="0.4"/>
+  <circle cx="440" cy="360" r="14" fill="#c07bff" opacity="0.4"/>
+  <circle cx="80" cy="350" r="8" fill="#5ac8ff" opacity="0.45"/>
+
+  <!-- Snape: robes -->
+  <path d="M256 250c-72 0-118 42-130 122-3 20-4 40-4 60h268c0-20-1-40-4-60-12-80-58-122-130-122z" fill="url(#robe)"/>
+  <path d="M256 250c-26 0-48 6-66 18l40 44 26-30 26 30 40-44c-18-12-40-18-66-18z" fill="#3a3f52" opacity="0.6"/>
+
+  <!-- Collar -->
+  <path d="M206 262l50 58 50-58-22-12-28 30-28-30z" fill="#e9cdb0"/>
+
+  <!-- Head / hair -->
+  <ellipse cx="256" cy="180" rx="86" ry="92" fill="#0d0f16"/>
+  <ellipse cx="256" cy="176" rx="64" ry="78" fill="#e9cdb0"/>
+
+  <!-- Long hair curtains -->
+  <path d="M192 150c-14 60-18 130-10 196 16-8 30-24 34-48-12-52-14-104-6-148z" fill="#0d0f16"/>
+  <path d="M320 150c14 60 18 130 10 196-16-8-30-24-34-48 12-52 14-104 6-148z" fill="#0d0f16"/>
+
+  <!-- Brows -->
+  <path d="M216 150c14-8 30-6 40 4" stroke="#2a2d38" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M296 150c-14-8-30-6-40 4" stroke="#2a2d38" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+  <!-- Eyes -->
+  <ellipse cx="232" cy="174" rx="8" ry="9" fill="#12141c"/>
+  <ellipse cx="280" cy="174" rx="8" ry="9" fill="#12141c"/>
+
+  <!-- Hooked nose -->
+  <path d="M256 178c6 22 10 34 16 44-8 6-24 6-32 0 6-10 10-22 16-44z" fill="#dcbf9f"/>
+  <path d="M240 220c10 6 22 6 32 0" stroke="#c9a983" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- Stern mouth -->
+  <path d="M232 244c16-8 32-8 48 0" stroke="#8a6f57" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Potion flask -->
+  <g filter="url(#glow)">
+    <path d="M352 356h44v26l30 52c10 18-3 40-24 40h-56c-21 0-34-22-24-40l30-52z" fill="#dbe9ff" opacity="0.28"/>
+    <path d="M352 356h44v26l30 52c10 18-3 40-24 40h-56c-21 0-34-22-24-40l30-52z" fill="none" stroke="#dbe9ff" stroke-width="7"/>
+    <path d="M342 420h84c8 14-2 32-20 32h-44c-18 0-28-18-20-32z" fill="url(#potion)"/>
+    <rect x="366" y="336" width="16" height="24" rx="4" fill="#a3703f"/>
+    <circle cx="372" cy="410" r="7" fill="#eaffe9" opacity="0.9"/>
+    <circle cx="398" cy="428" r="5" fill="#eaffe9" opacity="0.8"/>
+  </g>
+
+  <!-- Golden snitch-like spark -->
+  <circle cx="120" cy="220" r="16" fill="#ffd34d" filter="url(#glow)"/>
+</svg>
