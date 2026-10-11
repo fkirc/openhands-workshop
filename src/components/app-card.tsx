@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -7,6 +9,8 @@ import { TagChip } from "./tag-chip";
 
 interface AppCardProps {
   app: App;
+  /** Called when the app defines an in-page `sequence` instead of a plain link. */
+  onActivate?: (app: App) => void;
 }
 
 /** Internal routes use client-side navigation; external apps open in a new tab. */
@@ -39,9 +43,11 @@ function AppLink({
   );
 }
 
-export function AppCard({ app }: AppCardProps) {
-  return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-amber-300/20 bg-[#241a06]/70 shadow-sm ring-1 ring-amber-200/10 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-2xl hover:shadow-amber-950/50">
+export function AppCard({ app, onActivate }: AppCardProps) {
+  const interactive = Boolean(app.sequence && onActivate);
+
+  const inner = (
+    <>
       <div className="relative h-40 overflow-hidden bg-[#2a1d05] sm:h-44">
         <Image
           src={app.card}
@@ -65,12 +71,16 @@ export function AppCard({ app }: AppCardProps) {
           </span>
           <div className="min-w-0">
             <h3 className="truncate font-semibold text-amber-100">{app.name}</h3>
-            <AppLink
-              app={app}
-              className="block truncate text-sm text-amber-200/70 transition-colors hover:text-amber-100"
-            >
-              {app.domain}
-            </AppLink>
+            {interactive ? (
+              <span className="block truncate text-sm text-amber-200/70">{app.domain}</span>
+            ) : (
+              <AppLink
+                app={app}
+                className="block truncate text-sm text-amber-200/70 transition-colors hover:text-amber-100"
+              >
+                {app.domain}
+              </AppLink>
+            )}
           </div>
         </div>
 
@@ -84,14 +94,39 @@ export function AppCard({ app }: AppCardProps) {
           </div>
         )}
 
-        <AppLink
-          app={app}
-          className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-amber-200 transition-colors hover:text-amber-100"
-        >
-          Open app
-          <ArrowUpRightIcon className="h-4 w-4" />
-        </AppLink>
+        {interactive ? (
+          <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-amber-200 transition-colors group-hover:text-amber-100">
+            Watch the prank
+            <ArrowUpRightIcon className="h-4 w-4" />
+          </span>
+        ) : (
+          <AppLink
+            app={app}
+            className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-amber-200 transition-colors hover:text-amber-100"
+          >
+            Open app
+            <ArrowUpRightIcon className="h-4 w-4" />
+          </AppLink>
+        )}
       </div>
-    </article>
+    </>
   );
+
+  const shell =
+    "group flex flex-col overflow-hidden rounded-2xl border border-amber-300/20 bg-[#241a06]/70 text-left shadow-sm ring-1 ring-amber-200/10 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-2xl hover:shadow-amber-950/50";
+
+  if (interactive) {
+    return (
+      <button
+        type="button"
+        onClick={() => onActivate?.(app)}
+        aria-label={`Play ${app.name}`}
+        className={shell}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return <article className={shell}>{inner}</article>;
 }

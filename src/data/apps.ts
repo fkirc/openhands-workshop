@@ -22,6 +22,11 @@ export interface App {
   popularity: number;
   /** Category tags; see src/data/tags.ts for the catalog. */
   tags: string[];
+  /**
+   * When set, clicking the card plays an in-page sequence instead of opening
+   * `url`. The value selects which sequence (see GrandpaPrank).
+   */
+  sequence?: "grandpa-prank";
 }
 
 export const APPS: App[] = [
@@ -109,6 +114,19 @@ export const APPS: App[] = [
     publishedAt: "2026-10-11",
     popularity: 78,
     tags: ["Games", "Puzzle"],
+  },
+  {
+    id: "grandpa-hacker",
+    name: "Grandpa's Revenge",
+    domain: "grandpa.nomo.zone",
+    url: "https://grandpa.nomo.zone/",
+    slogan: "I may be old, but I still got you hacked. Hahaha!",
+    icon: "/apps/grandpa-icon.svg",
+    card: "/apps/grandpa-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 88,
+    sequence: "grandpa-prank",
+    tags: ["Games"],
   },
 ];
 
