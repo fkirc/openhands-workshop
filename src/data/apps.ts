@@ -53,6 +53,7 @@ export const APPS: App[] = [
     card: "/apps/snape-card.svg",
     publishedAt: "2026-10-11",
     popularity: 88,
+    tags: [],
   },
   {
     id: "consulting-stanislava-doganova",
@@ -64,6 +65,7 @@ export const APPS: App[] = [
     card: "/apps/consulting-stanislava-doganova-card.svg",
     publishedAt: "2026-10-11",
     popularity: 68,
+    tags: [],
   },
   {
     id: "nomo-snake",
@@ -160,6 +162,7 @@ export const APPS: App[] = [
     card: "/apps/black-spot-card.svg",
     publishedAt: "2026-10-11",
     popularity: 58,
+    tags: [],
   },
   {
     id: "shadowtales",
@@ -171,6 +174,7 @@ export const APPS: App[] = [
     card: "/apps/shadowtales-card.svg",
     publishedAt: "2026-10-11",
     popularity: 88,
+    tags: [],
   },
 ];
 
