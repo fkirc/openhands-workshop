@@ -7,6 +7,7 @@ import { Rocket } from "@/components/rocket";
 import { WalkingCat } from "@/components/walking-cat";
 import { SpritzweinIcon } from "@/components/icons";
 import { DanubeTemperature } from "@/components/danube-temperature";
+import { DanubeTemperature } from "@/components/danube-temperature";
 
 export default function Home() {
   const apps = getApps();
@@ -66,6 +67,8 @@ export default function Home() {
             </figcaption>
           </figure>
         </section>
+
+        <DanubeTemperature />
 
         <DanubeTemperature />
 
