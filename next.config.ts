@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "work-1-xbvjadjarafueilw.prod-runtime.all-hands.dev",
     "work-2-xbvjadjarafueilw.prod-runtime.all-hands.dev",
+    "work-1-bjfjhsluctceyihz.prod-runtime.all-hands.dev",
+    "work-2-bjfjhsluctceyihz.prod-runtime.all-hands.dev",
   ],
   turbopack: {
     rules: {

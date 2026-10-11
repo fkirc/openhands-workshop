@@ -1,0 +1,52 @@
+<svg width="320" height="196" viewBox="0 0 320 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="stglow" cx="50%" cy="42%" r="70%">
+      <stop offset="0%" stop-color="#f6d38a"/>
+      <stop offset="55%" stop-color="#c9742f"/>
+      <stop offset="100%" stop-color="#2a1608"/>
+    </radialGradient>
+    <linearGradient id="stfog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7e6c4" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#f7e6c4" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="320" height="196" rx="28" fill="#171310"/>
+  <rect x="8" y="8" width="304" height="180" rx="22" fill="url(#stglow)"/>
+
+  <!-- scenery silhouettes -->
+  <g fill="#6f5233" opacity="0.75">
+    <path d="M8 150 L60 92 L112 150 Z"/>
+    <path d="M208 150 L262 88 L316 150 Z"/>
+  </g>
+  <g fill="#4f3a22">
+    <path d="M8 168 Q160 150 312 168 L312 188 L8 188 Z"/>
+  </g>
+
+  <!-- two shadow puppets meeting -->
+  <g fill="#0d0805">
+    <g transform="translate(96,74) scale(0.36)">
+      <path d="M44 124 Q60 112 76 124 L82 250 Q60 258 38 250 Z"/>
+      <circle cx="60" cy="80" r="22"/>
+      <path d="M34 80 Q34 44 60 44 Q86 44 86 80 Q86 104 78 118 L70 108 Q74 88 60 86 Q46 88 50 108 L42 118 Q34 104 34 80 Z"/>
+      <path d="M52 250 L46 292 L58 292 L62 250 Z"/>
+      <path d="M66 250 L70 292 L82 292 L74 250 Z"/>
+    </g>
+    <g transform="translate(178,64) scale(0.36)">
+      <path d="M38 122 Q60 104 82 122 L92 250 Q60 262 28 250 Z"/>
+      <circle cx="60" cy="80" r="22"/>
+      <path d="M36 78 Q36 46 60 46 Q84 46 84 78 Q78 62 60 62 Q42 62 36 78 Z"/>
+      <path d="M30 60 L60 4 L90 60 Z"/>
+      <path d="M52 250 L46 292 L58 292 L62 250 Z"/>
+      <path d="M66 250 L70 292 L82 292 L74 250 Z"/>
+    </g>
+  </g>
+
+  <!-- floating hearts -->
+  <g fill="#ffd9a0" opacity="0.85">
+    <path d="M150 52 c-4-6-12-4-12 2 0 5 6 8 12 13 6-5 12-8 12-13 0-6-8-8-12-2 z"/>
+    <path d="M138 34 c-3-4-8-3-8 1 0 4 4 6 8 9 4-3 8-5 8-9 0-4-5-5-8-1 z" opacity="0.7"/>
+  </g>
+
+  <rect x="8" y="120" width="304" height="68" rx="22" fill="url(#stfog)"/>
+</svg>
