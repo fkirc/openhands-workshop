@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="196" viewBox="0 0 320 196" fill="none">
+  <defs>
+    <linearGradient id="gpCardBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6e7cd"/>
+      <stop offset="1" stop-color="#d9b48a"/>
+    </linearGradient>
+    <radialGradient id="gpCardGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7bb0e0" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#7bb0e0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="320" height="196" rx="10" fill="url(#gpCardBg)"/>
+  <circle cx="258" cy="66" r="72" fill="url(#gpCardGlow)"/>
+  <!-- friendly grandpa, right side -->
+  <g transform="translate(196 26) scale(1.2)">
+    <circle cx="50" cy="52" r="30" fill="#f0c9a6"/>
+    <circle cx="22" cy="54" r="6" fill="#e3b892"/>
+    <circle cx="78" cy="54" r="6" fill="#e3b892"/>
+    <path d="M24 40 q10 -26 26 -26 q16 0 26 26 q-14 -10 -26 -10 q-12 0 -26 10 Z" fill="#e8e6df"/>
+    <circle cx="39" cy="50" r="4" fill="#fff"/>
+    <circle cx="61" cy="50" r="4" fill="#fff"/>
+    <circle cx="39.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <circle cx="60.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <g fill="none" stroke="#3a3226" stroke-width="2.4">
+      <circle cx="39" cy="50" r="8"/>
+      <circle cx="61" cy="50" r="8"/>
+      <path d="M47 50 h6"/>
+    </g>
+    <path d="M50 54 q6 9 -2 12" stroke="#d8a97f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M37 70 q13 -6 26 0 q-13 9 -26 0 Z" fill="#e8e6df"/>
+    <path d="M43 79 q7 5 14 0" stroke="#8a4a3f" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- speech bubble -->
+  <g transform="translate(24 30)">
+    <rect width="150" height="66" rx="12" fill="#ffffff" stroke="#3a3226" stroke-width="3"/>
+    <path d="M44 66 l-6 16 l20 -16 Z" fill="#ffffff" stroke="#3a3226" stroke-width="3" stroke-linejoin="round"/>
+    <text x="16" y="30" fill="#1d3557" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Let Grandpa</text>
+    <text x="16" y="52" fill="#1d3557" font-family="system-ui, sans-serif" font-size="16" font-weight="700">explain you AI</text>
+  </g>
+  <text x="24" y="176" fill="#1d3557" font-family="system-ui, sans-serif" font-size="18" font-weight="700" letter-spacing="0.5">GRANDPA EXPLAINS AI</text>
+</svg>

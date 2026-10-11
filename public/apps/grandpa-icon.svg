@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <defs>
+    <clipPath id="gpIconClip"><rect width="100" height="100" rx="22" ry="22"/></clipPath>
+    <linearGradient id="gpIconBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3e2c7"/>
+      <stop offset="1" stop-color="#d9b48a"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#gpIconClip)">
+    <rect width="100" height="100" fill="url(#gpIconBg)"/>
+    <!-- friendly grandpa face -->
+    <circle cx="50" cy="52" r="30" fill="#f0c9a6"/>
+    <circle cx="22" cy="54" r="6" fill="#e3b892"/>
+    <circle cx="78" cy="54" r="6" fill="#e3b892"/>
+    <path d="M24 40 q10 -26 26 -26 q16 0 26 26 q-14 -10 -26 -10 q-12 0 -26 10 Z" fill="#e8e6df"/>
+    <circle cx="39" cy="50" r="4" fill="#fff"/>
+    <circle cx="61" cy="50" r="4" fill="#fff"/>
+    <circle cx="39.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <circle cx="60.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <g fill="none" stroke="#3a3226" stroke-width="2.4">
+      <circle cx="39" cy="50" r="8"/>
+      <circle cx="61" cy="50" r="8"/>
+      <path d="M47 50 h6"/>
+    </g>
+    <path d="M50 54 q6 9 -2 12" stroke="#d8a97f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M37 70 q13 -6 26 0 q-13 9 -26 0 Z" fill="#e8e6df"/>
+    <path d="M43 79 q7 5 14 0" stroke="#8a4a3f" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <!-- little AI badge -->
+    <circle cx="76" cy="76" r="17" fill="#1d3557"/>
+    <text x="76" y="82" text-anchor="middle" fill="#f6efe0" font-family="system-ui, sans-serif" font-size="14" font-weight="700">AI</text>
+  </g>
+</svg>

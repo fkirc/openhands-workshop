@@ -18,6 +18,11 @@ export interface App {
   publishedAt: string;
   /** Higher is more popular, used by the "Popularity" sort. */
   popularity: number;
+  /**
+   * When set, clicking the card plays an in-page sequence instead of opening
+   * `url`. The value selects which sequence (see GrandpaPrank).
+   */
+  sequence?: "grandpa-prank";
 }
 
 export const APPS: App[] = [
@@ -64,6 +69,18 @@ export const APPS: App[] = [
     card: "/apps/circuitrun-card.svg",
     publishedAt: "2026-10-05",
     popularity: 62,
+  },
+  {
+    id: "grandpa-hacker",
+    name: "Grandpa Explains AI",
+    domain: "grandpa.nomo.zone",
+    url: "https://grandpa.nomo.zone/",
+    slogan: "Let Grandpa explain you AI.",
+    icon: "/apps/grandpa-icon.svg",
+    card: "/apps/grandpa-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 88,
+    sequence: "grandpa-prank",
   },
 ];
 
