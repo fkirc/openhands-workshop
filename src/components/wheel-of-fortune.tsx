@@ -16,16 +16,16 @@ interface Prize {
 
 /** Every slot is a real prize you can claim today, and every slot is free. */
 const PRIZES: Prize[] = [
-  { short: "Berggipfel", full: "Ein frisch gelüfteter Berggipfel", claim: "Steig auf den nächsten Hügel, stell dich ganz oben hin und atme dreimal tief durch.", emoji: "🏔️", color: "#c8102e" },
-  { short: "Melange", full: "Eine Melange mit extra viel Schaum", claim: "Ins nächste Kaffeehaus, bestellen, und den Schaum mit dem Löffel essen.", emoji: "☕", color: "#ffffff" },
-  { short: "Almrausch", full: "Eine Handvoll Almrausch zum Anschauen", claim: "Ein Stück bergauf wandern und zuschauen, wie er rot leuchtet. Pflücken verboten.", emoji: "🌺", color: "#c8102e" },
-  { short: "Sachertorte", full: "Ein Stück Sachertorte, gaaanz langsam", claim: "Ein Stück kaufen und in Zeitlupe essen. Mit Schlagobers, ohne Diskussion.", emoji: "🍰", color: "#ffffff" },
-  { short: "Jodeln", full: "Ein Jodler in vollen Zügen", claim: "Auf einen Hügel stellen und losjodeln. Es schaut wirklich niemand zu.", emoji: "🎶", color: "#c8102e" },
-  { short: "Walzer", full: "Ein Walzer, ganz ohne Tanzkurs", claim: "Dreimal im Kreis drehen. Eins-zwei-drei, eins-zwei-drei. Fertig.", emoji: "💃", color: "#ffffff" },
-  { short: "Kaffeehaus", full: "Ein ganzer Nachmittag im Kaffeehaus", claim: "Hinsetzen, eine Melange bestellen und eine Zeitung lesen, die du nicht kennst.", emoji: "📰", color: "#c8102e" },
-  { short: "Schifoan", full: "Eine Abfahrt ohne Liftkarte", claim: "Liegt kein Schnee: stell dir die Abfahrt einfach bildlich vor.", emoji: "🎿", color: "#ffffff" },
-  { short: "Gulasch", full: "Ein Gulasch mit extra viel Saft", claim: "Selber kochen oder zum Wirt deines Vertrauens gehen und Brot zum Tunken verlangen.", emoji: "🍲", color: "#c8102e" },
-  { short: "Bergluft", full: "Frische Bergluft in vollen Zügen", claim: "Vor die Tür gehen, tief einatmen und nach oben schauen.", emoji: "🌬️", color: "#ffffff" },
+  { short: "Alpine Air", full: "A Mountain Peak, Freshly Aired Out", claim: "Climb the nearest hill, stand right at the top and take three deep breaths.", emoji: "🏔️", color: "#c8102e" },
+  { short: "Melange", full: "A Melange with Way Too Much Foam", claim: "Find a coffee house, order one, and eat the foam with a spoon.", emoji: "☕", color: "#ffffff" },
+  { short: "Alpenrose", full: "A Handful of Alpenrose, For Looking At", claim: "Walk uphill a bit and watch it glow red. Picking it is illegal, so just look.", emoji: "🌺", color: "#c8102e" },
+  { short: "Sachertorte", full: "One Slice of Sachertorte, Very Slowly", claim: "Buy a slice and eat it in slow motion. With whipped cream. Non-negotiable.", emoji: "🍰", color: "#ffffff" },
+  { short: "Yodel", full: "One Yodel, Loud and Proud", claim: "Stand on a hill and yodel. Nobody is watching. They never are.", emoji: "🎶", color: "#c8102e" },
+  { short: "Waltz", full: "One Waltz, No Lessons Needed", claim: "Spin in a circle three times. One-two-three, one-two-three. Done.", emoji: "💃", color: "#ffffff" },
+  { short: "Kaffeehaus", full: "A Whole Afternoon in a Coffee House", claim: "Sit down, order a Melange and read a newspaper you've never heard of.", emoji: "📰", color: "#c8102e" },
+  { short: "Ski Run", full: "One Downhill Run, Lift Ticket Not Included", claim: "No snow? Picture the run in your head. Close enough.", emoji: "🎿", color: "#ffffff" },
+  { short: "Goulash", full: "A Goulash with Extra Gravy", claim: "Cook one, or visit your trusted pub and ask for bread to mop it up.", emoji: "🍲", color: "#c8102e" },
+  { short: "Fresh Air", full: "Fresh Alpine Air, Deep Breaths Included", claim: "Step outside, breathe in deep and look up.", emoji: "🌬️", color: "#ffffff" },
 ];
 
 const SEG = 360 / PRIZES.length;
@@ -33,14 +33,14 @@ const R = 185;
 const CX = 200;
 const CY = 200;
 
-/** Rotating, increasingly unhinged Austrian headlines. Every spin is a win. */
+/** Rotating, increasingly unhinged headlines. Every spin is a win, so… */
 const HEADLINES = [
-  "LEIWAND!!!",
-  "OIDA, GEWONNEN!!!",
-  "FIX UND FERTIG!!!",
-  "HEAST, SCHAU HER!!!",
-  "GUAT IS GANGEN!!!",
-  "SERVUS, GLÜCK!!!",
+  "CONGRATULATIONS!!!",
+  "OIDA, YOU WON AGAIN!!!",
+  "AND THAT'S A WRAP!!!",
+  "OI, LOOK AT THIS!!!",
+  "THAT WENT WELL!!!",
+  "SERVUS, LUCK!!!",
 ];
 
 function polar(r: number, deg: number) {
@@ -71,14 +71,14 @@ const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
   color: PRIZES[i % PRIZES.length].color,
 }));
 
-/** Rotating Austrian win lines. Every spin wins, so they escalate fast. */
+/** Rotating win lines. Every spin wins, so they escalate fast. */
 const WIN_LINES = [
-  "GEWONNEN! (Na eh klar.)",
-  "SCHON WIEDER GEWONNEN!",
-  "UND NOCH EIN GEWINN!",
-  "DES GIBT'S JA NET!",
-  "OIDA, SCHO WIEDER!",
-  "GEWINNEN KANN MAN LERNEN!",
+  "YOU WON! (Well, obviously.)",
+  "YOU WON AGAIN!",
+  "AND ANOTHER WIN!",
+  "THIS CAN'T BE REAL!",
+  "OIDA, AGAIN?!",
+  "WINNING IS A SKILL!",
 ];
 
 export function WheelOfFortune() {
@@ -160,7 +160,7 @@ export function WheelOfFortune() {
           aria-pressed={muted}
           className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white"
         >
-          {muted ? "🔇 Ton aus" : "🔊 Ton an"}
+          {muted ? "🔇 Sound off" : "🔊 Sound on"}
         </button>
       </div>
 
@@ -168,7 +168,7 @@ export function WheelOfFortune() {
         <svg
           viewBox="0 0 400 400"
           role="img"
-          aria-label="Glücksrad"
+          aria-label="Wheel of Fortune"
           className="w-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
         >
           <defs>
@@ -241,7 +241,7 @@ export function WheelOfFortune() {
         disabled={spinning}
         className="rounded-full bg-white px-10 py-4 text-lg font-semibold text-zinc-900 shadow-lg transition hover:-translate-y-0.5 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
       >
-        {spinning ? "Dreht si…" : "GLÜCKSRAD DREHEN"}
+        {spinning ? "Spinning…" : "SPIN TO WIN"}
       </button>
 
       <div className="min-h-[9rem] w-full max-w-md" aria-live="polite">
@@ -268,21 +268,21 @@ export function WheelOfFortune() {
             <p className="relative mt-2 text-2xl font-semibold text-white">{result.full}</p>
             <p className="relative mt-2 text-sm text-zinc-300">{result.claim}</p>
             <p className="relative mt-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
-              Sofort einlösbar · Kosten: €0,00 · ka Kauf notwendig, nie net
+              Claimable right now · cost: €0.00 · no purchase necessary, ever
             </p>
           </div>
         ) : (
           <p className="pt-6 text-center text-sm text-zinc-400">
-            Zehn Preise. Alle gratis. Alle sofort einlösbar. Jedes Feld ein Gewinn.
+            Ten prizes. All free. All claimable today. Every slot is a winner.
           </p>
         )}
       </div>
 
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/50 p-5 backdrop-blur-md">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-semibold text-white">Heute gratis gwunna</h2>
+          <h2 className="font-semibold text-white">Free things won today</h2>
           <span className="text-sm text-zinc-400">
-            {wins} {wins === 1 ? "Gewinn" : "Gewinne"} · 0 Verluste · €0,00 ausgeben
+            {wins} {wins === 1 ? "win" : "wins"} · 0 losses · €0.00 spent
           </span>
         </div>
         {history.length > 0 ? (
@@ -298,7 +298,7 @@ export function WheelOfFortune() {
           </ul>
         ) : (
           <p className="mt-3 text-sm text-zinc-400">
-            Noch nix gwunna. Dreh amoi — des Ganze is gratis.
+            Nothing won yet. Spin it — the whole thing is free.
           </p>
         )}
       </div>

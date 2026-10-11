@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" role="img" aria-label="Glücksrad cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" role="img" aria-label="Wheel of Fortune cover">
   <defs>
     <linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#3a0a12"/>
@@ -12,8 +12,9 @@
   </defs>
   <rect width="1200" height="480" fill="url(#cbg)"/>
   <rect width="1200" height="480" fill="url(#glow)"/>
-  <text x="80" y="235" fill="#ffffff" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="2">GLÜCKSRAD</text>
-  <text x="82" y="300" fill="#ffd400" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="600">Jeder gwinnst. Immer. Alles gratis.</text>
+  <text x="80" y="205" fill="#ffffff" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="2">WHEEL OF</text>
+  <text x="80" y="290" fill="#ffffff" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="2">FORTUNE</text>
+  <text x="82" y="345" fill="#ffd400" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="600">Every spin wins. Every prize is free.</text>
   <g transform="translate(900,240) scale(2.55)">
     <path d="M0.00,0.00 L0.00,-62.00 A62.00,62.00 0 0 1 43.84,-43.84 Z" fill="#c8102e" stroke="#0b0616" stroke-width="1.5"/>
     <path d="M0.00,0.00 L43.84,-43.84 A62.00,62.00 0 0 1 62.00,0.00 Z" fill="#ffffff" stroke="#0b0616" stroke-width="1.5"/>

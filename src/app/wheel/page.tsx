@@ -4,8 +4,8 @@ import { PsychedelicBackground } from "@/components/psychedelic-bg";
 import { WheelOfFortune } from "@/components/wheel-of-fortune";
 
 export const metadata: Metadata = {
-  title: "Glücksrad · Nomo Apps Marketplace",
-  description: "Dreh am Glücksrad. Jeder gewinnt. Immer.",
+  title: "Wheel of Fortune · Nomo Apps Marketplace",
+  description: "Spin the wheel. Everyone always wins. Every prize is Austrian.",
 };
 
 export default function WheelPage() {
@@ -18,19 +18,19 @@ export default function WheelPage() {
             href="/"
             className="inline-flex items-center gap-1.5 text-sm text-zinc-300 transition-colors hover:text-white"
           >
-            ← Zurück zum Marktplatz
+            ← Back to marketplace
           </Link>
 
           <div className="mt-8 text-center">
             <p className="text-sm uppercase tracking-[0.2em] text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              Nomo Apps Marketplace präsentiert
+              Nomo Apps Marketplace presents
             </p>
             <h1 className="mt-2 text-4xl font-semibold tracking-tight [text-shadow:0_2px_18px_rgba(0,0,0,0.75)] sm:text-6xl">
-              Glücksrad
+              Wheel of Fortune
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              Des einzige Rad, bei dem&apos;d immer gwinnst. Jeder Preis is
-              gratis und sofort einlösbar.
+              The only wheel where you always win. Every prize is free and
+              ready to claim, Austrian-style.
             </p>
           </div>
 
