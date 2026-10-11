@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-label="Fifties Flipper">
+  <defs>
+    <linearGradient id="ic-cab" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5a3a24"/>
+      <stop offset="1" stop-color="#2a1a10"/>
+    </linearGradient>
+    <linearGradient id="ic-field" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f4e8c9"/>
+      <stop offset="1" stop-color="#dcc79a"/>
+    </linearGradient>
+    <linearGradient id="ic-marquee" x1="0" y1="0" x2="0" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d63b3f"/>
+      <stop offset="1" stop-color="#a81f24"/>
+    </linearGradient>
+    <radialGradient id="ic-ball" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#d8dde6"/>
+      <stop offset="1" stop-color="#6f7684"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="#14100e"/>
+  <rect x="40" y="28" width="432" height="456" rx="48" fill="url(#ic-cab)" stroke="#e9b44c" stroke-width="8"/>
+
+  <rect x="72" y="56" width="368" height="88" rx="24" fill="url(#ic-marquee)" stroke="#ffd987" stroke-width="6"/>
+  <text x="256" y="112" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="46" font-weight="700" fill="#fff4d6">FLIPPER</text>
+
+  <rect x="96" y="164" width="320" height="284" rx="20" fill="url(#ic-field)" stroke="#c9c2b4" stroke-width="8"/>
+
+  <path d="M136 268 A120 90 0 0 1 376 268" fill="none" stroke="#c1272d" stroke-width="6" opacity="0.5"/>
+  <path d="M160 292 A96 70 0 0 1 352 292" fill="none" stroke="#1f3a5f" stroke-width="6" opacity="0.45"/>
+
+  <circle cx="180" cy="272" r="34" fill="#c1272d" stroke="#8f1b1f" stroke-width="8"/>
+  <circle cx="180" cy="272" r="14" fill="#e9b44c"/>
+  <circle cx="332" cy="272" r="34" fill="#c1272d" stroke="#8f1b1f" stroke-width="8"/>
+  <circle cx="332" cy="272" r="14" fill="#e9b44c"/>
+  <circle cx="256" cy="340" r="34" fill="#c1272d" stroke="#8f1b1f" stroke-width="8"/>
+  <circle cx="256" cy="340" r="14" fill="#e9b44c"/>
+
+  <rect x="196" y="190" width="40" height="12" rx="4" fill="#c1272d"/>
+  <rect x="256" y="190" width="40" height="12" rx="4" fill="#c1272d"/>
+
+  <path d="M132 336 L184 392 L132 392 Z" fill="#e9b44c" stroke="#1f3a5f" stroke-width="6"/>
+  <path d="M380 336 L328 392 L380 392 Z" fill="#e9b44c" stroke="#1f3a5f" stroke-width="6"/>
+
+  <line x1="196" y1="412" x2="256" y2="424" stroke="#2a9d8f" stroke-width="22" stroke-linecap="round"/>
+  <line x1="316" y1="412" x2="256" y2="424" stroke="#2a9d8f" stroke-width="22" stroke-linecap="round"/>
+
+  <circle cx="284" cy="240" r="16" fill="url(#ic-ball)" stroke="#3b4048" stroke-width="3"/>
+</svg>
