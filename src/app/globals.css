@@ -182,6 +182,114 @@ body {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Walking cat: a ginger tabby strolling across the bottom of the page */
+/* ------------------------------------------------------------------ */
+
+.cat-sprite {
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  height: 100%;
+  aspect-ratio: 220 / 150;
+  animation: cat-walk-across 34s linear infinite;
+  will-change: transform;
+}
+
+.cat-figure {
+  height: 100%;
+  width: auto;
+  transform-origin: 50% 100%;
+  animation: cat-bob 0.52s ease-in-out infinite;
+  will-change: transform;
+}
+
+.cat-leg {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: cat-step 0.52s ease-in-out infinite;
+}
+
+.cat-leg--b {
+  animation-delay: -0.26s;
+}
+
+.cat-tail {
+  transform-box: fill-box;
+  transform-origin: 100% 70%;
+  animation: cat-tail-sway 1.6s ease-in-out infinite;
+}
+
+.cat-head {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: cat-head-bob 0.52s ease-in-out infinite;
+}
+
+.cat-ground-shadow {
+  fill: rgba(0, 0, 0, 0.35);
+  animation: cat-shadow-pulse 0.52s ease-in-out infinite;
+}
+
+@keyframes cat-walk-across {
+  from {
+    transform: translateX(-15vw);
+  }
+  to {
+    transform: translateX(115vw);
+  }
+}
+
+@keyframes cat-step {
+  0%,
+  100% {
+    transform: rotate(17deg);
+  }
+  50% {
+    transform: rotate(-17deg);
+  }
+}
+
+@keyframes cat-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes cat-head-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+}
+
+@keyframes cat-tail-sway {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(11deg);
+  }
+}
+
+@keyframes cat-shadow-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .psy-swirl,
   .psy-swirl--reverse,
@@ -189,6 +297,21 @@ body {
   .psy-lore,
   .psy-bubble,
   .psy-bubble-core {
+    animation: none;
+  }
+
+  /* Park the cat mid-walk instead of animating it across the screen. */
+  .cat-sprite {
+    left: 50%;
+    animation: none;
+    transform: translateX(-50%);
+  }
+
+  .cat-figure,
+  .cat-leg,
+  .cat-tail,
+  .cat-head,
+  .cat-ground-shadow {
     animation: none;
   }
 }

@@ -3,6 +3,7 @@ import { Clock } from "@/components/clock";
 import { Marketplace } from "@/components/marketplace";
 import { PsychedelicBackground } from "@/components/psychedelic-bg";
 import { Rocket } from "@/components/rocket";
+import { WalkingCat } from "@/components/walking-cat";
 
 export default function Home() {
   const apps = getApps();
@@ -24,6 +25,7 @@ export default function Home() {
 
         <Marketplace apps={apps} />
       </main>
+      <WalkingCat />
     </div>
   );
 }
