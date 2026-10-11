@@ -47,7 +47,7 @@ If a screenshot shows the wrong state, iterate with targeted navigation or inter
 Never use a Playwright MCP server (or similar browser-automation MCP) for this — always prefer the CLI/script approach above.
 
 Hydration gotchas (cost real time, learn from them):
-- Do NOT stub `Math.random` in `page.addInitScript` to make a page deterministic. Overriding it before the Next.js dev client boots breaks hydration (buttons stay dead). Seed randomness only after the app is interactive, or read the value under test from the rendered DOM instead.
+- Don't stub `Math.random` in `page.addInitScript`; it breaks hydration. Read random values from the DOM instead.
 - A slow first paint in `next dev` can look like a dead page; poll by actually clicking until state changes before concluding a click handler is broken.
 
 Retention of screenshots:
