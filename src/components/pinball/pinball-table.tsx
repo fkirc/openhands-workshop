@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BOARD_H, BOARD_W, PinballEngine, type GameState } from "./engine";
+import { PinballAudio } from "./sound";
 
 const STORAGE_KEY = "fifties-flipper-high-score";
+const MUTE_KEY = "fifties-flipper-muted";
 
 interface Hud {
   score: number;
@@ -19,11 +21,41 @@ function readHighScore(): number {
   return Number.isFinite(value) ? value : 0;
 }
 
+// Sound preference lives in localStorage, exposed as an external store so the
+// button reflects it without a hydration mismatch.
+const muteListeners = new Set<() => void>();
+
+function subscribeMute(listener: () => void) {
+  muteListeners.add(listener);
+  return () => {
+    muteListeners.delete(listener);
+  };
+}
+
+function getMuteSnapshot(): boolean {
+  return window.localStorage.getItem(MUTE_KEY) === "1";
+}
+
+function getMuteServerSnapshot(): boolean {
+  return false;
+}
+
+function writeMute(muted: boolean) {
+  try {
+    window.localStorage.setItem(MUTE_KEY, muted ? "1" : "0");
+  } catch {
+    // Storage can be unavailable (private mode); the choice stays in memory.
+  }
+  for (const listener of muteListeners) listener();
+}
+
 export function PinballTable() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<PinballEngine | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastRef = useRef<number>(0);
+  const audioRef = useRef<PinballAudio | null>(null);
+  const muted = useSyncExternalStore(subscribeMute, getMuteSnapshot, getMuteServerSnapshot);
   const [hud, setHud] = useState<Hud>({
     score: 0,
     ballsLeft: 3,
@@ -63,6 +95,9 @@ export function PinballTable() {
     engine.highScore = readHighScore();
     engineRef.current = engine;
 
+    const audio = new PinballAudio();
+    audioRef.current = audio;
+
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -79,6 +114,8 @@ export function PinballTable() {
       const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
       lastRef.current = now;
       engine.step(dt);
+      const cues = engine.drainSounds();
+      if (cues.length > 0) audioRef.current?.play(cues);
       engine.draw(ctx, canvas.width, canvas.height);
       syncHud();
       rafRef.current = window.requestAnimationFrame(frame);
@@ -103,11 +140,17 @@ export function PinballTable() {
     }
   }, [hud.state, hud.highScore]);
 
+  // Keep the audio engine in sync with the sound preference.
+  useEffect(() => {
+    audioRef.current?.setMuted(muted);
+  }, [muted]);
+
   // Keyboard: Z/M or arrow keys drive the flippers.
   useEffect(() => {
     const onKey = (event: KeyboardEvent, pressed: boolean) => {
       const engine = engineRef.current;
       if (!engine) return;
+      if (pressed) audioRef.current?.resume();
       const key = event.key.toLowerCase();
       if (key === "z" || key === "arrowleft") {
         engine.setFlipper("left", pressed);
@@ -131,12 +174,21 @@ export function PinballTable() {
   }, []);
 
   const start = () => {
+    audioRef.current?.resume();
     engineRef.current?.start();
     syncHud();
   };
 
   const setFlipper = (side: "left" | "right", pressed: boolean) => {
+    if (pressed) audioRef.current?.resume();
     engineRef.current?.setFlipper(side, pressed);
+  };
+
+  const toggleMute = () => {
+    const next = !muted;
+    writeMute(next);
+    audioRef.current?.setMuted(next);
+    if (!next) audioRef.current?.resume();
   };
 
   return (
@@ -144,6 +196,17 @@ export function PinballTable() {
       <div className="pinball-marquee">
         <span className="pinball-marquee__title">Fifties Flipper</span>
         <span className="pinball-marquee__sub">Amusement • Coin Op</span>
+        <button
+          type="button"
+          className="pinball-mute"
+          aria-pressed={muted}
+          aria-label="Toggle sound"
+          title={muted ? "Sound off" : "Sound on"}
+          onClick={toggleMute}
+        >
+          {muted ? "🔇" : "🔊"}
+          <span className="pinball-mute__label">{muted ? "Off" : "On"}</span>
+        </button>
       </div>
 
       <div className="pinball-hud" aria-live="polite">

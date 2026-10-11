@@ -79,6 +79,24 @@ export interface ScoreEvent {
   life: number;
 }
 
+/** Discrete cues the engine emits for the audio layer to voice. */
+export type SoundCue =
+  | "flipper"
+  | "launch"
+  | "bumper"
+  | "post"
+  | "sling"
+  | "target"
+  | "jackpot"
+  | "drain"
+  | "gameover";
+
+export interface SoundEvent {
+  cue: SoundCue;
+  /** Optional pitch multiplier, used to vary repeated hits. */
+  detune: number;
+}
+
 interface Spark {
   x: number;
   y: number;
@@ -107,6 +125,7 @@ export class PinballEngine {
   private leftFlipper: Flipper;
   private rightFlipper: Flipper;
   private events: ScoreEvent[] = [];
+  private sounds: SoundEvent[] = [];
   private sparks: Spark[] = [];
   private targetCombo = 0;
   private shake = 0;
@@ -202,6 +221,7 @@ export class PinballEngine {
 
   setFlipper(side: FlipperSide, pressed: boolean) {
     const f = side === "left" ? this.leftFlipper : this.rightFlipper;
+    if (pressed && !f.pressed) this.playSound("flipper", side === "left" ? 1 : 1.12);
     f.pressed = pressed;
   }
 
@@ -211,6 +231,7 @@ export class PinballEngine {
     this.ballsLeft = 3;
     this.targetCombo = 0;
     this.events = [];
+    this.sounds = [];
     this.sparks = [];
     this.touching.clear();
     for (const t of this.targets) t.down = false;
@@ -228,6 +249,7 @@ export class PinballEngine {
     this.vel.y = 60;
     this.shake = 0;
     this.touching.clear();
+    this.playSound("launch");
   }
 
   private drain() {
@@ -235,7 +257,9 @@ export class PinballEngine {
     if (this.ballsLeft <= 0) {
       this.state = "gameover";
       this.highScore = Math.max(this.highScore, this.score);
+      this.playSound("gameover");
     } else {
+      this.playSound("drain");
       this.launchBall();
     }
   }
@@ -244,6 +268,20 @@ export class PinballEngine {
     this.score += points;
     this.events.push({ points, label, x, y, life: 0 });
     if (this.events.length > 24) this.events.shift();
+  }
+
+  /** Queues a sound cue for the audio layer. */
+  private playSound(cue: SoundCue, detune = 1) {
+    if (this.sounds.length > 24) this.sounds.shift();
+    this.sounds.push({ cue, detune });
+  }
+
+  /** Hands the queued cues to the caller and clears the queue. */
+  drainSounds(): SoundEvent[] {
+    if (this.sounds.length === 0) return [];
+    const out = this.sounds;
+    this.sounds = [];
+    return out;
   }
 
   /** Emits a short-lived burst of enamel-coloured sparks. */
@@ -355,6 +393,7 @@ export class PinballEngine {
       this.vel.y += ny * s.kick;
       this.award(50, "SLING", cx, cy);
       this.burst(cx, cy, 7, 240);
+      this.playSound("sling");
       s.lit = 1;
       this.shake = Math.min(1, this.shake + 0.4);
     }
@@ -393,6 +432,7 @@ export class PinballEngine {
       b.lit = 1;
       this.burst(b.x, b.y, b.score >= 100 ? 12 : 6, b.score >= 100 ? 320 : 200);
       this.award(b.score, b.score >= 100 ? "BUMPER" : "POST", b.x, b.y);
+      this.playSound(b.score >= 100 ? "bumper" : "post", 0.94 + Math.random() * 0.12);
     }
   }
 
@@ -426,10 +466,12 @@ export class PinballEngine {
     t.lit = 1;
     this.burst(t.x + t.w / 2, t.y, 9, 220);
     this.award(500, "TARGET", t.x + t.w / 2, t.y);
+    this.playSound("target");
     if (this.targets.every((x) => x.down)) {
       this.targetCombo += 1;
       this.award(5000 * this.targetCombo, "ALL TARGETS!", BOARD_W / 2, 150);
       this.burst(BOARD_W / 2, 130, 26, 420);
+      this.playSound("jackpot");
       this.shake = Math.min(1, this.shake + 0.8);
       for (const x of this.targets) {
         x.down = false;
