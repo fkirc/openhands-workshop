@@ -3,15 +3,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Celebration, resumeAudio } from "./celebration";
-import { GameShare, SEAT, type MoveKind, type ShareMove } from "./game-share";
+import { GameShare, SEAT } from "./game-share";
+import {
+  cleanName,
+  defaultName,
+  freshState,
+  MAX_PLAYERS,
+  TOTAL,
+  type GamePlayer,
+} from "@/lib/game-codec";
 
-const TOTAL = 100;
 const COLS = 10;
 const CELL = 44;
 const SIZE = COLS * CELL;
 const PAD = 44;
 const START_Y = SIZE + PAD / 2;
-const MAX_PLAYERS = 4;
+const GLYPH_CHAR = { move: "m", ladder: "l", snake: "s" } as const;
 
 interface Link {
   from: number;
@@ -45,15 +52,15 @@ const SNAKES: Link[] = [
   { from: 17, to: 7, name: "Auf der Schi zu weit", note: "Overcooked the corner." },
 ];
 
-/** The table: name, casino chip colour, seat animal. */
+/** Chip colour and seat animal, by seat index. */
 const SEATS = [
-  { name: "Anna", color: "#e11d48", avatar: "🦊" },
-  { name: "Sepp", color: "#2563eb", avatar: "🐻" },
-  { name: "Lisi", color: "#059669", avatar: "🦅" },
-  { name: "Ferdl", color: "#d97706", avatar: "🐄" },
+  { color: "#e11d48", avatar: "🦊" },
+  { color: "#2563eb", avatar: "🐻" },
+  { color: "#059669", avatar: "🦅" },
+  { color: "#d97706", avatar: "🐄" },
 ];
 
-const HEADLINES: Record<MoveKind | "win", string[]> = {
+const HEADLINES: Record<"move" | "ladder" | "snake" | "win", string[]> = {
   ladder: ["LADDER UP!", "ALPINE LIFT!", "GIPFELSTURM!", "SERVUS, GIPFEL!"],
   snake: ["SNAKE!", "OIDA, GEFALLEN!", "BACK DOWN!", "DAS WAR NIX!"],
   move: ["ONWARDS!", "ROLLING!", "WEITER SO!"],
@@ -165,24 +172,14 @@ const BULBS = [
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
-interface PlayerState {
-  square: number;
-  rolls: number;
-  ladders: number;
-  snakes: number;
-}
-
 interface Event {
-  kind: MoveKind | "win";
+  kind: "move" | "ladder" | "snake" | "win";
   name: string | null;
   note: string;
   headline: string;
   square: number;
   player: number;
 }
-
-const freshPlayers = (n: number): PlayerState[] =>
-  Array.from({ length: n }, () => ({ square: 0, rolls: 0, ladders: 0, snakes: 0 }));
 
 /** A pip face of the die. */
 function DieFace({ value, size = 76 }: { value: number; size?: number }) {
@@ -257,22 +254,29 @@ function Marquee() {
   );
 }
 
-export function SnakesAndLadders() {
-  const [count, setCount] = useState(2);
-  const [players, setPlayers] = useState<PlayerState[]>(() => freshPlayers(2));
-  const [current, setCurrent] = useState(0);
+/**
+ * The game itself. `initial` is the state decoded from an invitation link (or
+ * null for a fresh table); `invited` marks that someone arrived via a link.
+ */
+export function SnakesAndLadders({ initial = null, invited = false }: { initial?: import("@/lib/game-codec").GameState | null; invited?: boolean }) {
+  const [players, setPlayers] = useState<GamePlayer[]>(
+    () => initial?.players ?? freshState(2).players,
+  );
+  const [current, setCurrent] = useState(initial?.turn ?? 0);
+  const [winner, setWinner] = useState<number | null>(initial?.winner ?? null);
   const [rolling, setRolling] = useState(false);
   const [tumbling, setTumbling] = useState(false);
   const [dice, setDice] = useState(6);
-  const [moves, setMoves] = useState<ShareMove[]>([]);
-  const [winner, setWinner] = useState<number | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [muted, setMuted] = useState(false);
   const [celebrations, setCelebrations] = useState(0);
 
-  const posRefs = useRef<number[]>(Array.from({ length: MAX_PLAYERS }, () => 0));
-  const currentRef = useRef(0);
+  const posRefs = useRef<number[]>(
+    Array.from({ length: MAX_PLAYERS }, (_, i) => initial?.players[i]?.square ?? 0),
+  );
+  const currentRef = useRef(initial?.turn ?? 0);
+  const winnerRef = useRef<number | null>(initial?.winner ?? null);
   const busy = useRef(false);
 
   useEffect(() => {
@@ -314,7 +318,7 @@ export function SnakesAndLadders() {
   );
 
   const roll = useCallback(async () => {
-    if (busy.current || winner !== null) return;
+    if (busy.current || winnerRef.current !== null) return;
     busy.current = true;
     const pi = currentRef.current;
     setRolling(true);
@@ -337,7 +341,7 @@ export function SnakesAndLadders() {
 
     const ladder = LADDERS.find((l) => l.from === landed);
     const snake = SNAKES.find((s) => s.from === landed);
-    let kind: MoveKind = "move";
+    let kind: "move" | "ladder" | "snake" = "move";
     let name: string | null = null;
     let note = "";
 
@@ -366,58 +370,66 @@ export function SnakesAndLadders() {
               rolls: p.rolls + 1,
               ladders: p.ladders + (kind === "ladder" ? 1 : 0),
               snakes: p.snakes + (kind === "snake" ? 1 : 0),
+              glyphs: (p.glyphs + GLYPH_CHAR[kind]).slice(-60),
             }
           : p,
       ),
     );
-    setMoves((m) => [...m, { roll: value, kind, square: landed, player: pi }]);
 
     const finished = landed >= TOTAL;
     setEvent({
       kind: finished ? "win" : kind,
       name,
-      note: finished ? `${SEATS[pi].name} reaches 100 and takes the pot.` : note,
+      note: finished ? `${players[pi].name} reaches 100 and takes the pot.` : note,
       headline: pick(HEADLINES[finished ? "win" : kind]),
       square: landed,
       player: pi,
     });
 
     if (finished) {
+      winnerRef.current = pi;
       setWinner(pi);
       celebrate();
     } else {
       if (kind !== "move") celebrate();
-      currentRef.current = (pi + 1) % count;
+      currentRef.current = (pi + 1) % players.length;
       setCurrent(currentRef.current);
     }
 
     setRolling(false);
     busy.current = false;
-  }, [celebrate, count, jumpTo, reducedMotion, stepTo, winner]);
+  }, [celebrate, jumpTo, players, reducedMotion, stepTo]);
 
-  const reset = useCallback(
-    (n = count) => {
-      if (busy.current) return;
-      posRefs.current = Array.from({ length: MAX_PLAYERS }, () => 0);
-      currentRef.current = 0;
-      setPlayers(freshPlayers(n));
-      setCurrent(0);
-      setDice(6);
-      setMoves([]);
-      setWinner(null);
-      setEvent(null);
-    },
-    [count],
-  );
+  const reset = useCallback((n = players.length) => {
+    if (busy.current) return;
+    const fresh = freshState(n).players;
+    posRefs.current = Array.from({ length: MAX_PLAYERS }, () => 0);
+    currentRef.current = 0;
+    winnerRef.current = null;
+    setPlayers(fresh);
+    setCurrent(0);
+    setDice(6);
+    setWinner(null);
+    setEvent(null);
+  }, [players.length]);
 
   const changeCount = useCallback(
     (n: number) => {
-      if (busy.current || n === count) return;
-      setCount(n);
+      if (busy.current || n === players.length) return;
       reset(n);
     },
-    [count, reset],
+    [players.length, reset],
   );
+
+  const rename = useCallback((i: number, raw: string) => {
+    setPlayers((ps) => ps.map((p, j) => (j === i ? { ...p, name: raw } : p)));
+  }, []);
+
+  const commitName = useCallback((i: number) => {
+    setPlayers((ps) =>
+      ps.map((p, j) => (j === i ? { ...p, name: cleanName(p.name, defaultName(i)) } : p)),
+    );
+  }, []);
 
   const tokens = useMemo(() => {
     const groups = new Map<number, number[]>();
@@ -441,15 +453,9 @@ export function SnakesAndLadders() {
 
   const leader = players.reduce((a, b) => (b.square > a.square ? b : a), players[0]);
   const turn = SEATS[current];
+  const turnName = players[current]?.name ?? "Player";
   const turnStyle = { "--turn": turn.color } as CSSProperties;
-  const sharePlayers = players.map((p, i) => ({
-    name: SEATS[i].name,
-    color: SEATS[i].color,
-    square: p.square,
-    rolls: p.rolls,
-    ladders: p.ladders,
-    snakes: p.snakes,
-  }));
+  const rolling0 = players.every((p) => p.rolls === 0);
 
   return (
     <div className="mt-8 flex w-full flex-col items-center gap-6">
@@ -457,6 +463,14 @@ export function SnakesAndLadders() {
       {celebrations > 0 && !reducedMotion && <div key={celebrations} className="snl-flash" aria-hidden="true" />}
 
       <Marquee />
+
+      {invited && (
+        <p className="w-full max-w-[520px] rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-center text-sm text-amber-200">
+          🔗 You joined {players[0].name}&apos;s table. It&apos;s{" "}
+          <span className="font-semibold">{turnName}&apos;s</span> turn —{" "}
+          {winner !== null ? `${players[winner].name} already took the pot.` : "roll when ready."}
+        </p>
+      )}
 
       <div className="snl-spotlight relative w-full max-w-[520px]">
         <div className="flex items-center justify-between gap-3 px-1 pb-3">
@@ -467,9 +481,9 @@ export function SnakesAndLadders() {
                 key={n}
                 type="button"
                 onClick={() => changeCount(n)}
-                aria-pressed={count === n}
+                aria-pressed={players.length === n}
                 className={`h-7 w-7 rounded-full text-xs font-bold transition ${
-                  count === n
+                  players.length === n
                     ? "bg-gradient-to-b from-amber-200 to-amber-400 text-zinc-900 shadow"
                     : "border border-white/15 bg-zinc-900/60 text-zinc-300 hover:border-white/30"
                 }`}
@@ -482,7 +496,7 @@ export function SnakesAndLadders() {
             <button
               type="button"
               onClick={() => reset()}
-              disabled={rolling || (moves.length === 0 && winner === null)}
+              disabled={rolling || (rolling0 && winner === null)}
               className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white disabled:opacity-40"
             >
               ↺ New game
@@ -646,7 +660,7 @@ export function SnakesAndLadders() {
                 {winner === null ? "Now rolling" : "Winner"}
               </p>
               <p className="text-lg font-semibold text-white">
-                {winner === null ? turn.name : SEATS[winner].name}
+                {winner === null ? turnName : players[winner].name}
               </p>
             </div>
           </div>
@@ -672,7 +686,7 @@ export function SnakesAndLadders() {
             style={{ borderColor: `${SEATS[event.player].color}66`, background: "rgba(9,9,11,0.72)" }}
           >
             <p className="relative text-sm uppercase tracking-[0.25em] text-amber-200">
-              {SEAT[event.player]} {SEATS[event.player].name} ·{" "}
+              {SEAT[event.player]} {players[event.player].name} ·{" "}
               {event.kind === "win" ? "JACKPOT" : event.kind === "ladder" ? "LADDER" : event.kind === "snake" ? "SNAKE" : "ROLLED"}
             </p>
             <p className="snl-headline relative mt-1 text-xs font-bold uppercase tracking-[0.3em] text-amber-300">
@@ -685,7 +699,7 @@ export function SnakesAndLadders() {
           </div>
         ) : (
           <p className="pt-6 text-center text-sm text-zinc-400">
-            {count} players at the table. Climb the ladders, dodge the snakes, reach square 100.
+            {players.length} players at the table. Climb the ladders, dodge the snakes, reach square 100.
           </p>
         )}
       </div>
@@ -709,12 +723,20 @@ export function SnakesAndLadders() {
                   {SEATS[i].avatar}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between text-sm">
-                    <span className="truncate font-medium text-white">
-                      {SEATS[i].name}
-                      {winner === i ? " 🏆" : ""}
-                    </span>
-                    <span className="text-zinc-400">
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <input
+                      value={p.name}
+                      onChange={(e) => rename(i, e.target.value)}
+                      onBlur={() => commitName(i)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.currentTarget.blur();
+                      }}
+                      maxLength={14}
+                      aria-label={`Player ${i + 1} name`}
+                      className="min-w-0 flex-1 rounded-md bg-transparent font-medium text-white outline-none transition focus:bg-white/10 focus:px-1"
+                    />
+                    <span className="shrink-0 text-zinc-400">
+                      {winner === i ? "🏆 " : ""}
                       {p.square} · {p.rolls} rolls
                     </span>
                   </div>
@@ -760,13 +782,7 @@ export function SnakesAndLadders() {
         </div>
       </div>
 
-      <GameShare
-        players={sharePlayers}
-        moves={moves}
-        won={winner !== null}
-        winner={winner}
-        total={TOTAL}
-      />
+      <GameShare players={players} turn={current} won={winner !== null} winner={winner} />
     </div>
   );
 }
