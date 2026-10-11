@@ -7,13 +7,13 @@ export default function Home() {
   const apps = getApps();
 
   return (
-    <div className="relative flex flex-1 flex-col text-white">
+    <div className="relative flex flex-1 flex-col text-amber-50">
       <PsychedelicBackground />
       <Rocket />
       <main className="relative z-10 flex flex-1 flex-col">
         <section className="mx-auto w-full max-w-6xl px-4 pb-10 pt-14 sm:px-6 sm:pt-20">
-          <p className="text-sm uppercase tracking-[0.2em] text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">Welcome to</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight [text-shadow:0_2px_18px_rgba(0,0,0,0.75)] sm:text-6xl">
+          <p className="text-sm uppercase tracking-[0.2em] text-amber-200/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">Welcome to</p>
+          <h1 className="mt-2 bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-400 bg-clip-text text-4xl font-semibold tracking-tight text-transparent [text-shadow:0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl">
             Nomo Apps Marketplace
           </h1>
         </section>
