@@ -162,9 +162,11 @@ export class PinballEngine {
       { ax: 30, ay: 120, bx: 120, by: 96, restitution: 0.4, kick: 0, kind: "guide", lit: 0 },
       { ax: BOARD_W - 30, ay: 120, bx: BOARD_W - 120, by: 96, restitution: 0.4, kick: 0, kind: "guide", lit: 0 },
 
-      // Slanted funnel walls that lead to the drain.
-      this.wall(w, 500, 198, 742),
-      this.wall(BOARD_W - w, 500, BOARD_W - 198, 742),
+      // Slanted chrome rails that lead onto the flippers. Each rail ends at
+      // its flipper pivot and shares the flipper's rest angle, so the ball
+      // rolls smoothly from the rail onto the flipper with no wedge.
+      { ax: w, ay: 500, bx: 146, by: 656, restitution: 0.35, kick: 0, kind: "guide", lit: 0 },
+      { ax: BOARD_W - w, ay: 500, bx: BOARD_W - 146, by: 656, restitution: 0.35, kick: 0, kind: "guide", lit: 0 },
 
       // Slingshots.
       { ax: 60, ay: 430, bx: 150, by: 520, restitution: 0.5, kick: 320, kind: "sling", lit: 0 },
