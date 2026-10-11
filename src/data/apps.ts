@@ -20,6 +20,8 @@ export interface App {
   publishedAt: string;
   /** Higher is more popular, used by the "Popularity" sort. */
   popularity: number;
+  /** Category tags; see src/data/tags.ts for the catalog. */
+  tags: string[];
 }
 
 export const APPS: App[] = [
@@ -34,6 +36,7 @@ export const APPS: App[] = [
     card: "/apps/wheel-card.svg",
     publishedAt: "2026-10-11",
     popularity: 88,
+    tags: ["Games"],
   },
   {
     id: "nomo-snake",
@@ -45,6 +48,7 @@ export const APPS: App[] = [
     card: "/apps/snake-card.svg",
     publishedAt: "2026-09-20",
     popularity: 80,
+    tags: ["Games", "Arcade"],
   },
   {
     id: "uniswap",
@@ -56,6 +60,7 @@ export const APPS: App[] = [
     card: "/apps/uniswap-card.svg",
     publishedAt: "2026-08-05",
     popularity: 95,
+    tags: ["Finance", "Web3"],
   },
   {
     id: "minesweeper",
@@ -67,6 +72,7 @@ export const APPS: App[] = [
     card: "/apps/minesweeper-card.svg",
     publishedAt: "2026-09-28",
     popularity: 70,
+    tags: ["Games", "Puzzle"],
   },
   {
     id: "circuit-run",
@@ -78,6 +84,7 @@ export const APPS: App[] = [
     card: "/apps/circuitrun-card.svg",
     publishedAt: "2026-10-05",
     popularity: 62,
+    tags: ["Games", "Racing"],
   },
   {
     id: "fifties-flipper",
@@ -89,6 +96,7 @@ export const APPS: App[] = [
     card: "/apps/fifties-pinball-card.svg",
     publishedAt: "2026-10-11",
     popularity: 68,
+    tags: ["Games", "Arcade"],
   },
   {
     id: "2048",
@@ -100,6 +108,7 @@ export const APPS: App[] = [
     card: "/apps/2048-card.svg",
     publishedAt: "2026-10-11",
     popularity: 78,
+    tags: ["Games", "Puzzle"],
   },
 ];
 
