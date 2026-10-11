@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { Celebration, resumeAudio } from "./celebration";
-import { GameShare, type MoveKind, type ShareMove } from "./game-share";
+import { GameShare, SEAT, type MoveKind, type ShareMove } from "./game-share";
 
 const TOTAL = 100;
 const COLS = 10;
@@ -10,6 +11,7 @@ const CELL = 44;
 const SIZE = COLS * CELL;
 const PAD = 44;
 const START_Y = SIZE + PAD / 2;
+const MAX_PLAYERS = 4;
 
 interface Link {
   from: number;
@@ -43,14 +45,40 @@ const SNAKES: Link[] = [
   { from: 17, to: 7, name: "Auf der Schi zu weit", note: "Overcooked the corner." },
 ];
 
+/** The table: name, casino chip colour, seat animal. */
+const SEATS = [
+  { name: "Anna", color: "#e11d48", avatar: "🦊" },
+  { name: "Sepp", color: "#2563eb", avatar: "🐻" },
+  { name: "Lisi", color: "#059669", avatar: "🦅" },
+  { name: "Ferdl", color: "#d97706", avatar: "🐄" },
+];
+
 const HEADLINES: Record<MoveKind | "win", string[]> = {
   ladder: ["LADDER UP!", "ALPINE LIFT!", "GIPFELSTURM!", "SERVUS, GIPFEL!"],
   snake: ["SNAKE!", "OIDA, GEFALLEN!", "BACK DOWN!", "DAS WAR NIX!"],
   move: ["ONWARDS!", "ROLLING!", "WEITER SO!"],
-  win: ["GIPFEL ERREICHT!!!", "GEWONNEN!!!", "DU HAST ES GESCHAFFT!!!"],
+  win: ["JACKPOT!!!", "GIPFEL ERREICHT!!!", "GEWONNEN!!!", "TAKES THE POT!!!"],
 };
 
-const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+/** Pip layouts, as percentages of a face. */
+const PIPS: Record<number, [number, number][]> = {
+  1: [[50, 50]],
+  2: [[30, 30], [70, 70]],
+  3: [[28, 28], [50, 50], [72, 72]],
+  4: [[30, 30], [70, 30], [30, 70], [70, 70]],
+  5: [[30, 30], [70, 30], [50, 50], [30, 70], [70, 70]],
+  6: [[30, 25], [70, 25], [30, 50], [70, 50], [30, 75], [70, 75]],
+};
+
+/** Which cube rotation shows each face value. */
+const CUBE_ROTATION: Record<number, string> = {
+  6: "rotateX(0deg) rotateY(0deg)",
+  1: "rotateX(0deg) rotateY(180deg)",
+  5: "rotateX(0deg) rotateY(-90deg)",
+  2: "rotateX(0deg) rotateY(90deg)",
+  3: "rotateX(-90deg) rotateY(0deg)",
+  4: "rotateX(90deg) rotateY(0deg)",
+};
 
 /** Round to 2 decimals so server and client render byte-identical SVG. */
 const f = (n: number) => Number(n.toFixed(2));
@@ -120,14 +148,29 @@ function snakeGeometry(a: number, b: number) {
 const SQUARES = Array.from({ length: TOTAL }, (_, i) => {
   const n = i + 1;
   const { x, y } = squareCenter(n);
-  return { n, x: f(x), y: f(y) };
+  return { n, x: f(x), y: f(y), light: Math.floor((n - 1) / COLS) % 2 === 0 };
 });
 
 const LADDER_SHAPES = LADDERS.map((l) => ({ ...l, ...ladderGeometry(l.from, l.to) }));
 const SNAKE_SHAPES = SNAKES.map((s) => ({ ...s, ...snakeGeometry(s.from, s.to) }));
 
+/** Casino bulbs around the frame, fixed positions for identical SSR markup. */
+const BULBS = [
+  ...Array.from({ length: 11 }, (_, i) => ({ x: 20 + i * 40, y: 14 })),
+  ...Array.from({ length: 11 }, (_, i) => ({ x: 20 + i * 40, y: SIZE - 14 })),
+  ...Array.from({ length: 11 }, (_, i) => ({ x: 14, y: 20 + i * 40 })),
+  ...Array.from({ length: 11 }, (_, i) => ({ x: SIZE - 14, y: 20 + i * 40 })),
+];
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+
+interface PlayerState {
+  square: number;
+  rolls: number;
+  ladders: number;
+  snakes: number;
+}
 
 interface Event {
   kind: MoveKind | "win";
@@ -135,22 +178,101 @@ interface Event {
   note: string;
   headline: string;
   square: number;
+  player: number;
+}
+
+const freshPlayers = (n: number): PlayerState[] =>
+  Array.from({ length: n }, () => ({ square: 0, rolls: 0, ladders: 0, snakes: 0 }));
+
+/** A pip face of the die. */
+function DieFace({ value, size = 76 }: { value: number; size?: number }) {
+  return (
+    <div
+      className="relative rounded-[14%] bg-gradient-to-br from-white to-zinc-200 shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-4px_10px_rgba(0,0,0,0.18)] ring-1 ring-black/10"
+      style={{ width: size, height: size }}
+    >
+      {PIPS[value].map(([px, py], i) => (
+        <span
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            left: `${px}%`,
+            top: `${py}%`,
+            width: "18%",
+            height: "18%",
+            transform: "translate(-50%, -50%)",
+            background: "radial-gradient(circle at 35% 30%, #6b7280, #111827 70%)",
+            boxShadow: "inset 0 -1px 2px rgba(255,255,255,0.35)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** The big roll: a real 3D cube that tumbles, then lands on the value. */
+function BigDie({ value, rolling }: { value: number; rolling: boolean }) {
+  const half = 44;
+  const faces: { v: number; transform: string }[] = [
+    { v: 6, transform: `translateZ(${half}px)` },
+    { v: 1, transform: `rotateY(180deg) translateZ(${half}px)` },
+    { v: 5, transform: `rotateY(90deg) translateZ(${half}px)` },
+    { v: 2, transform: `rotateY(-90deg) translateZ(${half}px)` },
+    { v: 3, transform: `rotateX(90deg) translateZ(${half}px)` },
+    { v: 4, transform: `rotateX(-90deg) translateZ(${half}px)` },
+  ];
+  return (
+    <div className="snl-dice-stage" style={{ width: 88, height: 88 }}>
+      <div
+        className="snl-cube"
+        style={{
+          width: 88,
+          height: 88,
+          transform: CUBE_ROTATION[value] ?? CUBE_ROTATION[6],
+          transitionDuration: rolling ? "0.18s" : "0.65s",
+        }}
+      >
+        {faces.map((fc) => (
+          <div key={fc.v} className="snl-cube-face" style={{ transform: fc.transform }}>
+            <DieFace value={fc.v} size={88} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Marquee() {
+  return (
+    <div className="snl-marquee w-full max-w-[520px]" aria-hidden="true">
+      <div className="snl-marquee-inner">
+        <span className="snl-marquee-text">★ HIGH ROLLER EDITION ★ SNAKES &amp; LADDERS ★</span>
+      </div>
+      <div className="snl-marquee-bulbs">
+        {Array.from({ length: 26 }, (_, i) => (
+          <span key={i} className="snl-marquee-bulb" style={{ animationDelay: `${(i % 5) * 0.12}s` }} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function SnakesAndLadders() {
-  const [pos, setPos] = useState(0);
+  const [count, setCount] = useState(2);
+  const [players, setPlayers] = useState<PlayerState[]>(() => freshPlayers(2));
+  const [current, setCurrent] = useState(0);
   const [rolling, setRolling] = useState(false);
-  const [dice, setDice] = useState<number | null>(null);
+  const [tumbling, setTumbling] = useState(false);
+  const [dice, setDice] = useState(6);
   const [moves, setMoves] = useState<ShareMove[]>([]);
-  const [best, setBest] = useState(0);
-  const [won, setWon] = useState(false);
+  const [winner, setWinner] = useState<number | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [muted, setMuted] = useState(false);
   const [celebrations, setCelebrations] = useState(0);
 
-  const posRef = useRef(0);
-  const bestRef = useRef(0);
+  const posRefs = useRef<number[]>(Array.from({ length: MAX_PLAYERS }, () => 0));
+  const currentRef = useRef(0);
   const busy = useRef(false);
 
   useEffect(() => {
@@ -165,39 +287,53 @@ export function SnakesAndLadders() {
     if (!reducedMotion) setCelebrations((c) => c + 1);
   }, [reducedMotion]);
 
-  const moveTo = useCallback(
-    async (target: number, stepMs: number) => {
-      let p = posRef.current;
+  const setSquare = useCallback((pi: number, square: number) => {
+    posRefs.current[pi] = square;
+    setPlayers((ps) => ps.map((p, i) => (i === pi ? { ...p, square } : p)));
+  }, []);
+
+  const stepTo = useCallback(
+    async (pi: number, target: number, stepMs: number) => {
+      let p = posRefs.current[pi];
       while (p < target && p < TOTAL) {
         p += 1;
-        posRef.current = p;
-        setPos(p);
+        setSquare(pi, p);
         if (stepMs) await sleep(stepMs);
       }
       return p;
     },
-    [],
+    [setSquare],
+  );
+
+  const jumpTo = useCallback(
+    async (pi: number, target: number, dur: number) => {
+      setSquare(pi, target);
+      if (dur) await sleep(dur);
+    },
+    [setSquare],
   );
 
   const roll = useCallback(async () => {
-    if (busy.current || won) return;
+    if (busy.current || winner !== null) return;
     busy.current = true;
+    const pi = currentRef.current;
     setRolling(true);
     setEvent(null);
     if (!reducedMotion) resumeAudio();
 
     const value = 1 + Math.floor(Math.random() * 6);
     if (!reducedMotion) {
-      for (let i = 0; i < 7; i++) {
+      setTumbling(true);
+      for (let i = 0; i < 9; i++) {
         setDice(1 + Math.floor(Math.random() * 6));
-        await sleep(70);
+        await sleep(58);
       }
+      setTumbling(false);
     }
     setDice(value);
 
-    const stepMs = reducedMotion ? 0 : 185;
-    const start = posRef.current;
-    let landed = await moveTo(start + value, stepMs);
+    const stepMs = reducedMotion ? 0 : 160;
+    let landed = await stepTo(pi, posRefs.current[pi] + value, stepMs);
 
     const ladder = LADDERS.find((l) => l.from === landed);
     const snake = SNAKES.find((s) => s.from === landed);
@@ -209,188 +345,335 @@ export function SnakesAndLadders() {
       kind = "ladder";
       name = ladder.name;
       note = ladder.note;
-      if (!reducedMotion) await sleep(320);
-      posRef.current = ladder.to;
-      setPos(ladder.to);
+      if (!reducedMotion) await sleep(280);
+      await jumpTo(pi, ladder.to, reducedMotion ? 0 : 240);
       landed = ladder.to;
     } else if (snake) {
       kind = "snake";
       name = snake.name;
       note = snake.note;
-      if (!reducedMotion) await sleep(320);
-      posRef.current = snake.to;
-      setPos(snake.to);
+      if (!reducedMotion) await sleep(280);
+      await jumpTo(pi, snake.to, reducedMotion ? 0 : 240);
       landed = snake.to;
     }
 
-    const nextBest = Math.max(bestRef.current, landed);
-    bestRef.current = nextBest;
-    setBest(nextBest);
-    setMoves((m) => [...m, { roll: value, kind, square: landed }]);
+    setPlayers((ps) =>
+      ps.map((p, i) =>
+        i === pi
+          ? {
+              ...p,
+              square: landed,
+              rolls: p.rolls + 1,
+              ladders: p.ladders + (kind === "ladder" ? 1 : 0),
+              snakes: p.snakes + (kind === "snake" ? 1 : 0),
+            }
+          : p,
+      ),
+    );
+    setMoves((m) => [...m, { roll: value, kind, square: landed, player: pi }]);
 
     const finished = landed >= TOTAL;
     setEvent({
       kind: finished ? "win" : kind,
       name,
-      note: finished
-        ? `Square ${TOTAL} reached in ${moves.length + 1} rolls. Austrian champion.`
-        : note,
+      note: finished ? `${SEATS[pi].name} reaches 100 and takes the pot.` : note,
       headline: pick(HEADLINES[finished ? "win" : kind]),
       square: landed,
+      player: pi,
     });
 
     if (finished) {
-      setWon(true);
+      setWinner(pi);
       celebrate();
-    } else if (kind !== "move") {
-      celebrate();
+    } else {
+      if (kind !== "move") celebrate();
+      currentRef.current = (pi + 1) % count;
+      setCurrent(currentRef.current);
     }
 
     setRolling(false);
     busy.current = false;
-  }, [celebrate, moveTo, moves.length, reducedMotion, won]);
+  }, [celebrate, count, jumpTo, reducedMotion, stepTo, winner]);
 
-  const reset = useCallback(() => {
-    if (busy.current) return;
-    posRef.current = 0;
-    bestRef.current = 0;
-    setPos(0);
-    setDice(null);
-    setMoves([]);
-    setBest(0);
-    setWon(false);
-    setEvent(null);
-  }, []);
+  const reset = useCallback(
+    (n = count) => {
+      if (busy.current) return;
+      posRefs.current = Array.from({ length: MAX_PLAYERS }, () => 0);
+      currentRef.current = 0;
+      setPlayers(freshPlayers(n));
+      setCurrent(0);
+      setDice(6);
+      setMoves([]);
+      setWinner(null);
+      setEvent(null);
+    },
+    [count],
+  );
 
-  const { x: tokenX, y: tokenY } = tokenCenter(pos);
+  const changeCount = useCallback(
+    (n: number) => {
+      if (busy.current || n === count) return;
+      setCount(n);
+      reset(n);
+    },
+    [count, reset],
+  );
+
+  const tokens = useMemo(() => {
+    const groups = new Map<number, number[]>();
+    players.forEach((p, i) => {
+      const list = groups.get(p.square) ?? [];
+      list.push(i);
+      groups.set(p.square, list);
+    });
+    const out: { x: number; y: number }[] = [];
+    groups.forEach((idxs, square) => {
+      const base = tokenCenter(square);
+      idxs.forEach((pi, j) => {
+        const n = idxs.length;
+        const ang = (j / Math.max(n, 1)) * Math.PI * 2;
+        const r = n > 1 ? 9 : 0;
+        out[pi] = { x: base.x + Math.cos(ang) * r, y: base.y + Math.sin(ang) * r };
+      });
+    });
+    return out;
+  }, [players]);
+
+  const leader = players.reduce((a, b) => (b.square > a.square ? b : a), players[0]);
+  const turn = SEATS[current];
+  const turnStyle = { "--turn": turn.color } as CSSProperties;
+  const sharePlayers = players.map((p, i) => ({
+    name: SEATS[i].name,
+    color: SEATS[i].color,
+    square: p.square,
+    rolls: p.rolls,
+    ladders: p.ladders,
+    snakes: p.snakes,
+  }));
 
   return (
-    <div className="mt-8 flex flex-col items-center gap-6">
+    <div className="mt-8 flex w-full flex-col items-center gap-6">
       <Celebration fireKey={celebrations} muted={muted} enabled={!reducedMotion} />
-      {celebrations > 0 && !reducedMotion && (
-        <div key={celebrations} className="snl-flash" aria-hidden="true" />
-      )}
+      {celebrations > 0 && !reducedMotion && <div key={celebrations} className="snl-flash" aria-hidden="true" />}
 
-      <div className="flex w-full max-w-[460px] items-center justify-between">
-        <p className="text-sm text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-          🎲 {moves.length} {moves.length === 1 ? "roll" : "rolls"} · square {best}/{TOTAL}
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={reset}
-            disabled={rolling || (pos === 0 && !won)}
-            className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white disabled:opacity-40"
-          >
-            ↺ New game
-          </button>
-          <button
-            type="button"
-            onClick={() => setMuted((m) => !m)}
-            aria-pressed={muted}
-            className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white"
-          >
-            {muted ? "🔇 Sound off" : "🔊 Sound on"}
-          </button>
+      <Marquee />
+
+      <div className="snl-spotlight relative w-full max-w-[520px]">
+        <div className="flex items-center justify-between gap-3 px-1 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-[0.25em] text-amber-200/80">Table</span>
+            {[2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => changeCount(n)}
+                aria-pressed={count === n}
+                className={`h-7 w-7 rounded-full text-xs font-bold transition ${
+                  count === n
+                    ? "bg-gradient-to-b from-amber-200 to-amber-400 text-zinc-900 shadow"
+                    : "border border-white/15 bg-zinc-900/60 text-zinc-300 hover:border-white/30"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => reset()}
+              disabled={rolling || (moves.length === 0 && winner === null)}
+              className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white disabled:opacity-40"
+            >
+              ↺ New game
+            </button>
+            <button
+              type="button"
+              onClick={() => setMuted((m) => !m)}
+              aria-pressed={muted}
+              className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white"
+            >
+              {muted ? "🔇 Sound off" : "🔊 Sound on"}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="relative w-full max-w-[460px]">
-        <svg
-          viewBox={`0 0 ${SIZE} ${SIZE + PAD}`}
-          role="img"
-          aria-label="Austrian Snakes and Ladders board"
-          className="w-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
-        >
-          <defs>
-            <linearGradient id="snl-board" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fbf7ee" />
-              <stop offset="100%" stopColor="#efe6d3" />
-            </linearGradient>
-          </defs>
+        <div className="snl-table relative rounded-[26px] p-4">
+          <svg
+            viewBox={`-16 -16 ${SIZE + 32} ${SIZE + PAD + 32}`}
+            role="img"
+            aria-label="Austrian Snakes and Ladders casino board"
+            className="w-full drop-shadow-[0_26px_60px_rgba(0,0,0,0.7)]"
+          >
+            <defs>
+              <linearGradient id="snl-felt" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0f6b45" />
+                <stop offset="100%" stopColor="#073b25" />
+              </linearGradient>
+              <linearGradient id="snl-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#f7e08a" />
+                <stop offset="45%" stopColor="#d9a520" />
+                <stop offset="100%" stopColor="#8a6210" />
+              </linearGradient>
+            </defs>
 
-          <rect x="0" y="0" width={SIZE} height={SIZE} rx="8" fill="url(#snl-board)" />
-          <rect x="0" y="0" width={SIZE} height={SIZE} rx="8" fill="none" stroke="#0b0616" strokeWidth="3" />
+            {/* Casino table felt */}
+            <rect x="-16" y="-16" width={SIZE + 32} height={SIZE + PAD + 32} rx="22" fill="url(#snl-felt)" />
+            <rect
+              x="-16"
+              y="-16"
+              width={SIZE + 32}
+              height={SIZE + PAD + 32}
+              rx="22"
+              fill="none"
+              stroke="url(#snl-gold)"
+              strokeWidth="7"
+            />
+            <rect
+              x="-6"
+              y="-6"
+              width={SIZE + 12}
+              height={SIZE + PAD + 12}
+              rx="16"
+              fill="none"
+              stroke="#000"
+              strokeOpacity="0.35"
+              strokeWidth="1.5"
+            />
 
-          {SQUARES.map(({ n, x, y }) => {
-            const col = Math.floor((n - 1) / COLS) % 2;
-            return (
+            {BULBS.map((b, i) => (
+              <circle key={i} cx={b.x} cy={b.y} r="3.4" fill="#fff3c4">
+                <animate
+                  attributeName="opacity"
+                  values="1;0.25;1"
+                  dur="1.8s"
+                  begin={`${(i % 5) * 0.16}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            ))}
+
+            {SQUARES.map(({ n, x, y, light }) => (
               <g key={n}>
                 <rect
                   x={f(x - CELL / 2)}
                   y={f(y - CELL / 2)}
                   width={CELL}
                   height={CELL}
-                  fill={col === 0 ? "#f7f1e3" : "#e9dfc8"}
-                  stroke="#d8cbb0"
-                  strokeWidth="1"
+                  fill={light ? "#fbf7ee" : "#0e5c3a"}
+                  stroke="url(#snl-gold)"
+                  strokeOpacity="0.55"
+                  strokeWidth="1.1"
                 />
-                <text x={f(x - CELL / 2 + 4)} y={f(y - CELL / 2 + 12)} fontSize="9" fill="#8a7c60" fontWeight="600">
+                <text
+                  x={f(x - CELL / 2 + 4)}
+                  y={f(y - CELL / 2 + 12)}
+                  fontSize="9"
+                  fontWeight="700"
+                  fill={light ? "#8a1020" : "#f4d47c"}
+                >
                   {n}
                 </text>
               </g>
-            );
-          })}
+            ))}
 
-          {LADDER_SHAPES.map((l) => (
-            <g key={`L${l.from}`} stroke="#b8860b" strokeLinecap="round">
-              {l.rails.map((r, i) => (
-                <line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} strokeWidth="4" />
-              ))}
-              {l.rungs.map((r, i) => (
-                <line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} strokeWidth="2.5" stroke="#d9a520" />
-              ))}
-            </g>
-          ))}
+            {LADDER_SHAPES.map((l) => (
+              <g key={`L${l.from}`} strokeLinecap="round">
+                {l.rails.map((r, i) => (
+                  <line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} stroke="#8a6210" strokeWidth="5" />
+                ))}
+                {l.rails.map((r, i) => (
+                  <line key={`g${i}`} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} stroke="url(#snl-gold)" strokeWidth="3.4" />
+                ))}
+                {l.rungs.map((r, i) => (
+                  <line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} stroke="#f7e08a" strokeWidth="2.6" />
+                ))}
+              </g>
+            ))}
 
-          {SNAKE_SHAPES.map((s) => (
-            <g key={`S${s.from}`}>
-              <path d={s.d} fill="none" stroke="#7a1020" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
-              <path d={s.d} fill="none" stroke="#c8102e" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="1 7" />
-              <circle cx={f(s.head.x)} cy={f(s.head.y)} r="6.5" fill="#7a1020" />
-              <circle cx={f(s.head.x - 2.2)} cy={f(s.head.y - 2)} r="1.5" fill="#ffe6e6" />
-              <circle cx={f(s.head.x + 2.2)} cy={f(s.head.y - 2)} r="1.5" fill="#ffe6e6" />
-            </g>
-          ))}
+            {SNAKE_SHAPES.map((s) => (
+              <g key={`S${s.from}`}>
+                <path d={s.d} fill="none" stroke="#3d0a12" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={s.d} fill="none" stroke="#e11d48" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={s.d} fill="none" stroke="#f7e08a" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 9" />
+                <circle cx={f(s.head.x)} cy={f(s.head.y)} r="7" fill="#3d0a12" />
+                <circle cx={f(s.head.x)} cy={f(s.head.y)} r="5" fill="#e11d48" />
+                <circle cx={f(s.head.x - 2)} cy={f(s.head.y - 1.6)} r="1.5" fill="#fff3c4" />
+                <circle cx={f(s.head.x + 2)} cy={f(s.head.y - 1.6)} r="1.5" fill="#fff3c4" />
+              </g>
+            ))}
 
-          <rect x="0" y={SIZE + 4} width={SIZE} height={PAD - 8} rx="6" fill="#0b0616" opacity="0.85" />
-          <text x={SIZE / 2} y={START_Y} fontSize="14" fill="#ffd400" textAnchor="middle" dominantBaseline="central" fontWeight="700">
-            START · roll the dice
-          </text>
-
-          <g
-            style={{
-              transform: `translate(${f(tokenX)}px, ${f(tokenY)}px)`,
-              transition: rolling ? "transform 185ms ease-out" : "transform 220ms ease-out",
-            }}
-          >
-            <circle r="13" fill="#c8102e" stroke="#ffffff" strokeWidth="3" />
-            <text fontSize="14" textAnchor="middle" dominantBaseline="central">
-              🇦🇹
+            <rect x="0" y={SIZE + 4} width={SIZE} height={PAD - 8} rx="6" fill="#03170f" stroke="url(#snl-gold)" strokeWidth="1.5" />
+            <text x={SIZE / 2} y={START_Y} fontSize="14" fill="#f7e08a" textAnchor="middle" dominantBaseline="central" fontWeight="700" letterSpacing="2">
+              START · PLACE YOUR BETS
             </text>
-          </g>
-        </svg>
+
+            {players.map((p, i) => {
+              const t = tokens[i];
+              if (!t) return null;
+              return (
+                <g
+                  key={i}
+                  style={{
+                    transform: `translate(${f(t.x)}px, ${f(t.y)}px)`,
+                    transition: rolling ? "transform 160ms ease-out" : "transform 240ms cubic-bezier(0.34,1.56,0.64,1)",
+                  }}
+                >
+                  <circle r="13.5" fill="#000" opacity="0.35" />
+                  <circle r="12.5" fill={SEATS[i].color} stroke="#f7e08a" strokeWidth="2.6" />
+                  <text fontSize="13" textAnchor="middle" dominantBaseline="central">
+                    {SEATS[i].avatar}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
       </div>
 
-      <div className="flex items-center gap-5">
-        <span className="text-6xl leading-none" aria-hidden="true">
-          {dice ? DICE_FACES[dice - 1] : "🎲"}
-        </span>
-        <button
-          type="button"
-          onClick={roll}
-          disabled={rolling || won}
-          className="rounded-full bg-white px-10 py-4 text-lg font-semibold text-zinc-900 shadow-lg transition hover:-translate-y-0.5 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
-        >
-          {rolling ? "Rolling…" : won ? "You won!" : "ROLL THE DICE"}
-        </button>
+      {/* Dealer's tray: whose turn, the big dice, the button */}
+      <div className="w-full max-w-[520px] rounded-3xl border border-amber-300/25 bg-gradient-to-b from-zinc-900/80 to-black/70 p-5 backdrop-blur-md">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-full text-xl"
+              style={{ background: turn.color, boxShadow: `0 0 22px ${turn.color}99` }}
+            >
+              {turn.avatar}
+            </span>
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-amber-200/80">
+                {winner === null ? "Now rolling" : "Winner"}
+              </p>
+              <p className="text-lg font-semibold text-white">
+                {winner === null ? turn.name : SEATS[winner].name}
+              </p>
+            </div>
+          </div>
+
+          <BigDie value={dice} rolling={tumbling} />
+
+          <button
+            type="button"
+            onClick={roll}
+            disabled={rolling || winner !== null}
+            style={turnStyle}
+            className="snl-roll-button rounded-full px-8 py-4 text-lg font-black uppercase tracking-wider text-zinc-900 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+          >
+            {rolling ? "Rolling…" : winner !== null ? "Table closed" : "Roll the dice"}
+          </button>
+        </div>
       </div>
 
-      <div className="min-h-[7rem] w-full max-w-md" aria-live="polite">
+      <div className="min-h-[6.5rem] w-full max-w-[520px]" aria-live="polite">
         {event ? (
-          <div className="snl-pop relative overflow-hidden rounded-2xl border border-white/15 bg-zinc-900/70 p-6 text-center backdrop-blur-md">
-            <p className="relative text-sm uppercase tracking-[0.25em] text-emerald-300">
-              🇦🇹 {event.kind === "win" ? "FINISHED" : event.kind === "ladder" ? "LADDER" : event.kind === "snake" ? "SNAKE" : "ROLLED"} 🇦🇹
+          <div
+            className="snl-pop relative overflow-hidden rounded-2xl border p-5 text-center backdrop-blur-md"
+            style={{ borderColor: `${SEATS[event.player].color}66`, background: "rgba(9,9,11,0.72)" }}
+          >
+            <p className="relative text-sm uppercase tracking-[0.25em] text-amber-200">
+              {SEAT[event.player]} {SEATS[event.player].name} ·{" "}
+              {event.kind === "win" ? "JACKPOT" : event.kind === "ladder" ? "LADDER" : event.kind === "snake" ? "SNAKE" : "ROLLED"}
             </p>
             <p className="snl-headline relative mt-1 text-xs font-bold uppercase tracking-[0.3em] text-amber-300">
               {event.headline}
@@ -399,43 +682,91 @@ export function SnakesAndLadders() {
               {event.name ?? `Square ${event.square}`}
             </p>
             <p className="relative mt-2 text-sm text-zinc-300">{event.note}</p>
-            {event.kind !== "win" && (
-              <p className="relative mt-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
-                Now on square {event.square} · cost: €0.00
-              </p>
-            )}
           </div>
         ) : (
           <p className="pt-6 text-center text-sm text-zinc-400">
-            Roll the dice. Climb the ladders, dodge the snakes, reach square 100. Free to play.
+            {count} players at the table. Climb the ladders, dodge the snakes, reach square 100.
           </p>
         )}
       </div>
 
-      <div className="grid w-full max-w-md gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4 backdrop-blur-md">
+      <div className="w-full max-w-[520px] rounded-2xl border border-amber-300/20 bg-zinc-900/50 p-5 backdrop-blur-md">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-semibold text-white">The table</h2>
+          <span className="text-sm text-zinc-400">leader: {leader.square}/100</span>
+        </div>
+        <ul className="mt-3 space-y-2">
+          {players.map((p, i) => {
+            const pct = Math.round((p.square / TOTAL) * 100);
+            return (
+              <li key={i} className="flex items-center gap-3">
+                <span
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base ${
+                    current === i && winner === null ? "snl-turn-ring" : ""
+                  }`}
+                  style={{ background: SEATS[i].color }}
+                >
+                  {SEATS[i].avatar}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between text-sm">
+                    <span className="truncate font-medium text-white">
+                      {SEATS[i].name}
+                      {winner === i ? " 🏆" : ""}
+                    </span>
+                    <span className="text-zinc-400">
+                      {p.square} · {p.rolls} rolls
+                    </span>
+                  </div>
+                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className="h-full rounded-full transition-[width] duration-500"
+                      style={{ width: `${pct}%`, background: SEATS[i].color }}
+                    />
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="grid w-full max-w-[520px] gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-amber-300/20 bg-zinc-900/50 p-4 backdrop-blur-md">
           <h2 className="text-sm font-semibold text-amber-300">🪜 Ladders up</h2>
           <ul className="mt-2 space-y-1 text-xs text-zinc-300">
             {LADDERS.map((l) => (
               <li key={l.name}>
-                <span className="font-semibold text-white">{l.from}→{l.to}</span> {l.name}
+                <span className="font-semibold text-white">
+                  {l.from}→{l.to}
+                </span>{" "}
+                {l.name}
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4 backdrop-blur-md">
-          <h2 className="text-sm font-semibold text-red-300">🐍 Snakes down</h2>
+        <div className="rounded-2xl border border-amber-300/20 bg-zinc-900/50 p-4 backdrop-blur-md">
+          <h2 className="text-sm font-semibold text-rose-300">🐍 Snakes down</h2>
           <ul className="mt-2 space-y-1 text-xs text-zinc-300">
             {SNAKES.map((s) => (
               <li key={s.name}>
-                <span className="font-semibold text-white">{s.from}→{s.to}</span> {s.name}
+                <span className="font-semibold text-white">
+                  {s.from}→{s.to}
+                </span>{" "}
+                {s.name}
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <GameShare moves={moves} best={best} won={won} total={TOTAL} />
+      <GameShare
+        players={sharePlayers}
+        moves={moves}
+        won={winner !== null}
+        winner={winner}
+        total={TOTAL}
+      />
     </div>
   );
 }

@@ -4,9 +4,9 @@ import { PsychedelicBackground } from "@/components/psychedelic-bg";
 import { SnakesAndLadders } from "@/components/snakes-and-ladders";
 
 export const metadata: Metadata = {
-  title: "Austrian Snakes & Ladders · Nomo Apps Marketplace",
+  title: "Austrian Snakes & Ladders · High Roller Casino",
   description:
-    "Climb the Austrian ladders, dodge the Austrian snakes, reach square 100.",
+    "A casino-lit Austrian board game for 2–4 players. Climb the ladders, dodge the snakes, roll the big dice, reach square 100.",
 };
 
 export default function SnakesAndLaddersPage() {
@@ -24,14 +24,15 @@ export default function SnakesAndLaddersPage() {
 
           <div className="mt-8 text-center">
             <p className="text-sm uppercase tracking-[0.2em] text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              Nomo Apps Marketplace presents
+              Nomo Apps Marketplace · High Roller Edition
             </p>
             <h1 className="mt-2 text-4xl font-semibold tracking-tight [text-shadow:0_2px_18px_rgba(0,0,0,0.75)] sm:text-6xl">
               Austrian Snakes &amp; Ladders
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              A board game where the ladders are lifts and the snakes are your own
-              alpine decisions. Reach square 100 — it&apos;s free, obviously.
+              Two to four players, one felt table, casino lights and a very big
+              die. The ladders are lifts, the snakes are your own alpine
+              decisions. Reach square 100 and take the pot.
             </p>
           </div>
 
