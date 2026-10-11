@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="196" viewBox="0 0 320 196" fill="none">
+  <defs>
+    <radialGradient id="c-bg" cx="50%" cy="30%" r="90%">
+      <stop offset="0" stop-color="#33205a"/>
+      <stop offset="0.6" stop-color="#160f28"/>
+      <stop offset="1" stop-color="#07040f"/>
+    </radialGradient>
+    <linearGradient id="c-potion" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7bff9f"/>
+      <stop offset="1" stop-color="#12a45a"/>
+    </linearGradient>
+    <linearGradient id="c-potion2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d7b3ff"/>
+      <stop offset="1" stop-color="#7a2fd0"/>
+    </linearGradient>
+    <linearGradient id="c-robe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2f3f"/>
+      <stop offset="1" stop-color="#0c0e16"/>
+    </linearGradient>
+    <filter id="c-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="320" height="196" fill="url(#c-bg)"/>
+
+  <!-- Dungeon floor grid -->
+  <g opacity="0.5">
+    <path d="M0 28h320M0 56h320M0 84h320M0 112h320M0 140h320M0 168h320" stroke="#2a2340" stroke-width="1"/>
+    <path d="M32 0v196M64 0v196M96 0v196M128 0v196M160 0v196M192 0v196M224 0v196M256 0v196M288 0v196" stroke="#2a2340" stroke-width="1"/>
+  </g>
+
+  <!-- Stone pillars -->
+  <g fill="#4b4f60">
+    <rect x="8" y="8" width="40" height="16" rx="3"/>
+    <rect x="272" y="8" width="40" height="16" rx="3"/>
+    <rect x="8" y="172" width="40" height="16" rx="3"/>
+    <rect x="272" y="172" width="40" height="16" rx="3"/>
+    <rect x="140" y="44" width="40" height="16" rx="3"/>
+  </g>
+  <g fill="#5c6175">
+    <rect x="8" y="8" width="40" height="4" rx="2"/>
+    <rect x="272" y="8" width="40" height="4" rx="2"/>
+    <rect x="140" y="44" width="40" height="4" rx="2"/>
+  </g>
+
+  <!-- Potions -->
+  <g filter="url(#c-glow)">
+    <g transform="translate(238 116)">
+      <path d="M-10 0h20v10l14 24c5 9-2 20-12 20h-24c-10 0-17-11-12-20l14-24z" fill="#dbe9ff" opacity="0.25"/>
+      <path d="M-10 0h20v10l14 24c5 9-2 20-12 20h-24c-10 0-17-11-12-20l14-24z" fill="none" stroke="#dbe9ff" stroke-width="3"/>
+      <path d="M-14 32h28c3 7-2 16-10 16h-8c-8 0-13-9-10-16z" fill="url(#c-potion)"/>
+      <rect x="-5" y="-10" width="10" height="12" rx="3" fill="#a3703f"/>
+    </g>
+    <g transform="translate(96 60)">
+      <path d="M-9 0h18v9l13 22c5 8-2 18-11 18h-22c-9 0-16-10-11-18l13-22z" fill="#dbe9ff" opacity="0.25"/>
+      <path d="M-9 0h18v9l13 22c5 8-2 18-11 18h-22c-9 0-16-10-11-18l13-22z" fill="none" stroke="#dbe9ff" stroke-width="3"/>
+      <path d="M-13 29h26c3 6-2 14-9 14h-8c-7 0-12-8-9-14z" fill="url(#c-potion2)"/>
+      <rect x="-4" y="-9" width="8" height="11" rx="3" fill="#a3703f"/>
+    </g>
+  </g>
+
+  <!-- Snape snake body -->
+  <g>
+    <rect x="150" y="120" width="26" height="26" rx="8" fill="#1a1d27" stroke="#5a6278" stroke-width="1.5"/>
+    <rect x="122" y="120" width="26" height="26" rx="8" fill="#20242f" stroke="#5a6278" stroke-width="1.5"/>
+    <rect x="94" y="120" width="26" height="26" rx="8" fill="#1a1d27" stroke="#5a6278" stroke-width="1.5"/>
+    <rect x="94" y="92" width="26" height="26" rx="8" fill="#20242f" stroke="#5a6278" stroke-width="1.5"/>
+  </g>
+
+  <!-- Snape head -->
+  <g transform="translate(178 120)">
+    <circle r="19" fill="#14161f"/>
+    <ellipse cx="-11" cy="0" rx="18" ry="15" fill="#0d0f16"/>
+    <ellipse cx="4" cy="0" rx="14" ry="13" fill="#e9cdb0"/>
+    <path d="M14 -3l9 3-9 4z" fill="#dcbf9f"/>
+    <circle cx="10" cy="-6" r="2.4" fill="#12141c"/>
+    <circle cx="10" cy="6" r="2.4" fill="#12141c"/>
+    <path d="M5 -11l7 3M5 11l7-3" stroke="#2a2d38" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Vignette -->
+  <rect width="320" height="196" fill="url(#c-bg)" opacity="0.12"/>
+</svg>
