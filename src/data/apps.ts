@@ -90,6 +90,17 @@ export const APPS: App[] = [
     publishedAt: "2026-10-11",
     popularity: 68,
   },
+  {
+    id: "2048",
+    name: "2048",
+    domain: "play2048.co",
+    url: "https://play2048.co/",
+    slogan: "Join the numbers and get to the 2048 tile!",
+    icon: "/apps/2048-icon.svg",
+    card: "/apps/2048-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 78,
+  },
 ];
 
 export function getApps(): App[] {
