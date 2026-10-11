@@ -271,6 +271,9 @@ export function SnakesAndLadders({ initial = null, invited = false }: { initial?
   const [reducedMotion, setReducedMotion] = useState(false);
   const [muted, setMuted] = useState(false);
   const [celebrations, setCelebrations] = useState(0);
+  const [started, setStarted] = useState(initial !== null);
+  const [draft, setDraft] = useState("");
+  const [you, setYou] = useState("");
 
   const posRefs = useRef<number[]>(
     Array.from({ length: MAX_PLAYERS }, (_, i) => initial?.players[i]?.square ?? 0),
@@ -413,6 +416,33 @@ export function SnakesAndLadders({ initial = null, invited = false }: { initial?
     setEvent(null);
   }, [players.length]);
 
+  /** Add a seat without wiping the game — the table grows. */
+  const addPlayer = useCallback(() => {
+    if (busy.current || players.length >= MAX_PLAYERS) return;
+    const idx = players.length;
+    setPlayers((ps) => [
+      ...ps,
+      { name: defaultName(idx), square: 0, rolls: 0, ladders: 0, snakes: 0, glyphs: "" },
+    ]);
+    setDraft("");
+  }, [players.length]);
+
+  /** Start a fresh table with the given seat names (from the lobby). */
+  const startGame = useCallback((names: string[]) => {
+    const clean = names.map((n, i) => cleanName(n, defaultName(i)));
+    posRefs.current = Array.from({ length: MAX_PLAYERS }, () => 0);
+    currentRef.current = 0;
+    winnerRef.current = null;
+    setPlayers(
+      clean.map((name) => ({ name, square: 0, rolls: 0, ladders: 0, snakes: 0, glyphs: "" })),
+    );
+    setCurrent(0);
+    setDice(6);
+    setWinner(null);
+    setEvent(null);
+    setStarted(true);
+  }, []);
+
   const changeCount = useCallback(
     (n: number) => {
       if (busy.current || n === players.length) return;
@@ -462,14 +492,61 @@ export function SnakesAndLadders({ initial = null, invited = false }: { initial?
       <Celebration fireKey={celebrations} muted={muted} enabled={!reducedMotion} />
       {celebrations > 0 && !reducedMotion && <div key={celebrations} className="snl-flash" aria-hidden="true" />}
 
+      {!started ? (
+        <Lobby onStart={startGame} />
+      ) : (
+        <>
       <Marquee />
 
       {invited && (
-        <p className="w-full max-w-[520px] rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-center text-sm text-amber-200">
-          🔗 You joined {players[0].name}&apos;s table. It&apos;s{" "}
-          <span className="font-semibold">{turnName}&apos;s</span> turn —{" "}
-          {winner !== null ? `${players[winner].name} already took the pot.` : "roll when ready."}
-        </p>
+        <div className="w-full max-w-[520px] rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm text-amber-200">
+          <p className="text-center">
+            🔗 You joined <span className="font-semibold">{players[0].name}</span>&apos;s table.
+            {winner !== null
+              ? ` ${players[winner].name} already took the pot.`
+              : ` It's ${turnName}'s turn.`}
+          </p>
+          {!you && (
+            <div className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+              <label htmlFor="join-name" className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+                Which player are you?
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="join-name"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Your name"
+                  maxLength={14}
+                  className="w-40 rounded-full border border-white/15 bg-black/40 px-3 py-1.5 text-sm text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const name = cleanName(draft, "");
+                    if (!name) return;
+                    const idx = players.findIndex((p) => p.name === name);
+                    setYou(name);
+                    setDraft("");
+                    if (idx >= 0) {
+                      currentRef.current = idx;
+                      setCurrent(idx);
+                    }
+                  }}
+                  className="rounded-full bg-gradient-to-b from-amber-200 to-amber-400 px-4 py-1.5 text-sm font-semibold text-zinc-900"
+                >
+                  That&apos;s me
+                </button>
+              </div>
+            </div>
+          )}
+          {you && (
+            <p className="mt-2 text-center text-xs text-amber-200/90">
+              Playing as <span className="font-semibold">{you}</span>
+              {turnName === you ? " — it's your turn." : ` — waiting for ${turnName}.`}
+            </p>
+          )}
+        </div>
       )}
 
       <div className="snl-spotlight relative w-full max-w-[520px]">
@@ -751,6 +828,29 @@ export function SnakesAndLadders({ initial = null, invited = false }: { initial?
             );
           })}
         </ul>
+
+        <div className="mt-4 border-t border-white/10 pt-4">
+          {players.length < MAX_PLAYERS && (
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={addPlayer}
+                disabled={rolling}
+                className="rounded-full border border-amber-300/40 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-200 transition hover:-translate-y-0.5 hover:border-amber-300/70 disabled:opacity-50"
+              >
+                ➕ Add a seat
+              </button>
+              <span className="text-xs text-zinc-400">
+                for someone playing on this device
+              </span>
+            </div>
+          )}
+          <p className="mt-2 text-xs text-zinc-500">
+            Tap any name to change it. To add a friend on their own phone, use{" "}
+            <span className="font-semibold text-amber-200/90">Invite a player</span> below and send
+            them the link.
+          </p>
+        </div>
       </div>
 
       <div className="grid w-full max-w-[520px] gap-4 sm:grid-cols-2">
@@ -783,6 +883,114 @@ export function SnakesAndLadders({ initial = null, invited = false }: { initial?
       </div>
 
       <GameShare players={players} turn={current} won={winner !== null} winner={winner} />
+        </>
+      )}
+    </div>
+  );
+}
+
+/** A simple step-by-step lobby so the first screen is never a puzzle. */
+function Lobby({ onStart }: { onStart: (names: string[]) => void }) {
+  const [seats, setSeats] = useState(2);
+  const [names, setNames] = useState<string[]>(() => [defaultName(0), defaultName(1)]);
+
+  const setName = (i: number, value: string) =>
+    setNames((ns) => ns.map((n, j) => (j === i ? value : n)));
+
+  const setSeatCount = (n: number) => {
+    setSeats(n);
+    setNames((ns) => Array.from({ length: n }, (_, i) => ns[i] ?? defaultName(i)));
+  };
+
+  return (
+    <div className="w-full max-w-[520px] rounded-3xl border border-amber-300/25 bg-gradient-to-b from-zinc-900/85 to-black/75 p-6 backdrop-blur-md">
+      <h2 className="text-center text-2xl font-semibold text-white">Take your seats</h2>
+      <p className="mt-2 text-center text-sm text-zinc-300">
+        Two steps: put your name on a seat, then share the invitation link with everyone else.
+      </p>
+
+      <ol className="mt-5 space-y-4">
+        <li className="rounded-2xl border border-white/10 bg-black/30 p-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-300 text-xs font-bold text-zinc-900">
+              1
+            </span>
+            <span className="text-sm font-semibold text-white">Your name</span>
+          </div>
+          <input
+            autoFocus
+            value={names[0]}
+            onChange={(e) => setName(0, e.target.value)}
+            placeholder="Type your name"
+            maxLength={14}
+            aria-label="Your name"
+            className="mt-3 w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-lg text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/60"
+          />
+        </li>
+
+        <li className="rounded-2xl border border-white/10 bg-black/30 p-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-300 text-xs font-bold text-zinc-900">
+              2
+            </span>
+            <span className="text-sm font-semibold text-white">Who else is playing?</span>
+          </div>
+          <p className="mt-1 text-xs text-zinc-400">
+            Playing on this one device? Add their seats here. Inviting friends on their own phones?
+            Set the table size and they&apos;ll join by link — you can rename seats any time.
+          </p>
+          <div className="mt-3 flex items-center gap-2">
+            {[2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setSeatCount(n)}
+                aria-pressed={seats === n}
+                className={`h-9 flex-1 rounded-xl text-sm font-bold transition ${
+                  seats === n
+                    ? "bg-gradient-to-b from-amber-200 to-amber-400 text-zinc-900 shadow"
+                    : "border border-white/15 bg-zinc-900/60 text-zinc-300 hover:border-white/30"
+                }`}
+              >
+                {n} players
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 space-y-2">
+            {names.map((name, i) =>
+              i === 0 ? null : (
+                <div key={i} className="flex items-center gap-2">
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base"
+                    style={{ background: SEATS[i].color }}
+                  >
+                    {SEATS[i].avatar}
+                  </span>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(i, e.target.value)}
+                    placeholder={`Player ${i + 1}`}
+                    maxLength={14}
+                    aria-label={`Player ${i + 1} name`}
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/60"
+                  />
+                </div>
+              ),
+            )}
+          </div>
+        </li>
+      </ol>
+
+      <button
+        type="button"
+        onClick={() => onStart(names)}
+        className="snl-roll-button mt-5 w-full rounded-full px-6 py-4 text-lg font-black uppercase tracking-wider text-zinc-900 transition hover:-translate-y-0.5"
+      >
+        Start the game
+      </button>
+      <p className="mt-3 text-center text-xs text-zinc-500">
+        You&apos;ll get an invitation link right after — send it and friends join this exact game.
+      </p>
     </div>
   );
 }
