@@ -31,7 +31,7 @@ export function Marketplace({ apps }: MarketplaceProps) {
           ))}
         </div>
       ) : (
-        <p className="py-16 text-center text-sm text-zinc-400">
+        <p className="py-16 text-center text-sm text-zinc-600 dark:text-zinc-400">
           No apps match the selected tags.
         </p>
       )}

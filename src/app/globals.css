@@ -357,6 +357,9 @@ body {
   will-change: transform;
   filter: drop-shadow(0 0 12px rgba(255, 170, 60, 0.55));
 }
+.dark .rocket-body {
+  filter: drop-shadow(0 0 12px rgba(120, 200, 255, 0.6));
+}
 
 .rocket-flame {
   transform-box: fill-box;
