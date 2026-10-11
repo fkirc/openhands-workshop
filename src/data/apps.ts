@@ -117,10 +117,10 @@ export const APPS: App[] = [
   },
   {
     id: "grandpa-hacker",
-    name: "Grandpa's Revenge",
+    name: "Grandpa Explains AI",
     domain: "grandpa.nomo.zone",
     url: "https://grandpa.nomo.zone/",
-    slogan: "I may be old, but I still got you hacked. Hahaha!",
+    slogan: "Let Grandpa explain you AI.",
     icon: "/apps/grandpa-icon.svg",
     card: "/apps/grandpa-card.svg",
     publishedAt: "2026-10-11",

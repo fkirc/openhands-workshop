@@ -1,41 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="320" height="196" viewBox="0 0 320 196" fill="none">
   <defs>
     <linearGradient id="gpCardBg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2b1055"/>
-      <stop offset="0.5" stop-color="#7b1fa2"/>
-      <stop offset="1" stop-color="#0b1b3a"/>
+      <stop offset="0" stop-color="#f6e7cd"/>
+      <stop offset="1" stop-color="#d9b48a"/>
     </linearGradient>
     <radialGradient id="gpCardGlow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#00e0ff" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#00e0ff" stop-opacity="0"/>
+      <stop offset="0" stop-color="#7bb0e0" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#7bb0e0" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="320" height="196" rx="10" fill="url(#gpCardBg)"/>
-  <circle cx="255" cy="70" r="70" fill="url(#gpCardGlow)"/>
-  <circle cx="60" cy="160" r="60" fill="#ff00e5" opacity="0.18"/>
-  <!-- big balaclava head, right side -->
-  <g transform="translate(196 30) scale(1.15)">
-    <path d="M18 62c0-22 14-38 31-38s31 16 31 38c0 19-13 33-31 33S18 81 18 62Z" fill="#1c1c22"/>
-    <path d="M18 62c0-22 14-38 31-38s31 16 31 38c0 8-2.4 15-6.6 20.6H24.6C20.4 77 18 70 18 62Z" fill="#26262e"/>
-    <ellipse cx="36" cy="60" rx="7.2" ry="4.8" fill="#f6efe0"/>
-    <ellipse cx="62" cy="60" rx="7.2" ry="4.8" fill="#f6efe0"/>
-    <circle cx="36.8" cy="60.6" r="2.4" fill="#111"/>
-    <circle cx="61.2" cy="60.6" r="2.4" fill="#111"/>
-    <path d="M38 76q11 7 22 0" stroke="#f6efe0" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M33 88q16 12 32 0v8q-16 10-32 0Z" fill="#e8e6df"/>
+  <circle cx="258" cy="66" r="72" fill="url(#gpCardGlow)"/>
+  <!-- friendly grandpa, right side -->
+  <g transform="translate(196 26) scale(1.2)">
+    <circle cx="50" cy="52" r="30" fill="#f0c9a6"/>
+    <circle cx="22" cy="54" r="6" fill="#e3b892"/>
+    <circle cx="78" cy="54" r="6" fill="#e3b892"/>
+    <path d="M24 40 q10 -26 26 -26 q16 0 26 26 q-14 -10 -26 -10 q-12 0 -26 10 Z" fill="#e8e6df"/>
+    <circle cx="39" cy="50" r="4" fill="#fff"/>
+    <circle cx="61" cy="50" r="4" fill="#fff"/>
+    <circle cx="39.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <circle cx="60.5" cy="50.6" r="2" fill="#2b2b2b"/>
+    <g fill="none" stroke="#3a3226" stroke-width="2.4">
+      <circle cx="39" cy="50" r="8"/>
+      <circle cx="61" cy="50" r="8"/>
+      <path d="M47 50 h6"/>
+    </g>
+    <path d="M50 54 q6 9 -2 12" stroke="#d8a97f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M37 70 q13 -6 26 0 q-13 9 -26 0 Z" fill="#e8e6df"/>
+    <path d="M43 79 q7 5 14 0" stroke="#8a4a3f" stroke-width="2.4" fill="none" stroke-linecap="round"/>
   </g>
-  <!-- spray can -->
-  <g transform="translate(150 108) rotate(-16)">
-    <rect x="0" y="0" width="26" height="44" rx="6" fill="#cfd3da"/>
-    <rect x="0" y="0" width="26" height="12" rx="6" fill="#8f97a3"/>
-    <rect x="9" y="-12" width="8" height="13" fill="#5f6672"/>
-    <path d="M17 -12h13l6 4-19 4z" fill="#f6efe0" opacity="0.9"/>
+  <!-- speech bubble -->
+  <g transform="translate(24 30)">
+    <rect width="150" height="66" rx="12" fill="#ffffff" stroke="#3a3226" stroke-width="3"/>
+    <path d="M44 66 l-6 16 l20 -16 Z" fill="#ffffff" stroke="#3a3226" stroke-width="3" stroke-linejoin="round"/>
+    <text x="16" y="30" fill="#1d3557" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Let Grandpa</text>
+    <text x="16" y="52" fill="#1d3557" font-family="system-ui, sans-serif" font-size="16" font-weight="700">explain you AI</text>
   </g>
-  <!-- spray puff -->
-  <g fill="#f6efe0" opacity="0.5">
-    <circle cx="196" cy="112" r="4"/>
-    <circle cx="210" cy="104" r="3"/>
-    <circle cx="220" cy="116" r="2.4"/>
-  </g>
-  <text x="26" y="176" fill="#f6efe0" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="1">GRANDPA'S REVENGE</text>
+  <text x="24" y="176" fill="#1d3557" font-family="system-ui, sans-serif" font-size="18" font-weight="700" letter-spacing="0.5">GRANDPA EXPLAINS AI</text>
 </svg>
