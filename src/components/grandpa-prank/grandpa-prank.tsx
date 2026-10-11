@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { App } from "@/data/apps";
 import { Cop, JailCell, OldMan } from "./characters";
+import { startChiptune, stopChiptune } from "./chiptune";
 
 type Phase = "enter" | "mask" | "spray" | "police" | "jail" | "clean";
 
@@ -56,6 +57,7 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
   const [phase, setPhase] = useState<Phase>("enter");
   const [sprayed, setSprayed] = useState(0);
   const [cleaned, setCleaned] = useState(0);
+  const [muted, setMuted] = useState(false);
   const doneRef = useRef(onDone);
   useEffect(() => {
     doneRef.current = onDone;
@@ -93,13 +95,25 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
     return () => clearInterval(iv);
   }, [phase, apps.length]);
 
-  // Esc closes the sequence.
+  // Keygen chiptune starts once grandpa puts on the mask, and keeps looping
+  // through the remaining phases.
+  const soundActive = phase !== "enter";
+  useEffect(() => {
+    if (soundActive && !muted) startChiptune();
+    else stopChiptune();
+    return () => stopChiptune();
+  }, [soundActive, muted]);
+
+  // Esc closes the sequence; the tune always stops with the overlay.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") doneRef.current();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      stopChiptune();
+    };
   }, []);
 
   const inJail = phase === "jail";
@@ -125,7 +139,7 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Grandpa's Revenge prank animation"
+      aria-label="Grandpa Explains AI"
     >
       <button
         type="button"
@@ -134,10 +148,19 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
       >
         Close ✕
       </button>
+      <button
+        type="button"
+        onClick={() => setMuted((m) => !m)}
+        aria-pressed={muted}
+        aria-label={muted ? "Unmute soundtrack" : "Mute soundtrack"}
+        className="absolute right-4 top-16 z-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+      >
+        {muted ? "🔇 Sound off" : "🔊 Sound on"}
+      </button>
 
       <div className="relative mx-auto w-full max-w-5xl px-4 py-10">
         <h2 className="mb-6 text-center text-2xl font-bold tracking-tight text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.8)] sm:text-3xl">
-          Grandpa&apos;s Revenge
+          Grandpa Explains AI
         </h2>
 
         {inJail ? (
@@ -154,10 +177,21 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
             </JailCell>
           </div>
         ) : (
-          <div className="relative mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3">
-            {tiles.map(({ app, black }) => (
-              <Tile key={app.id} app={app} black={black} />
-            ))}
+          // Point-and-click "scene": a framed stage with a sky-to-floor backdrop.
+          <div
+            className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border-4 border-[#241a2e] shadow-[0_0_0_3px_#5a4a7a,0_18px_50px_rgba(0,0,0,0.7)]"
+            style={{
+              background:
+                "linear-gradient(180deg,#3a2a5e 0%,#6b3f7a 42%,#a5618a 62%,#4a3550 62%,#2c1f38 100%)",
+            }}
+          >
+            <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3">
+              {tiles.map(({ app, black }) => (
+                <Tile key={app.id} app={app} black={black} />
+              ))}
+            </div>
+            {/* floor line to sell the stage */}
+            <div className="pointer-events-none absolute inset-x-0 top-[62%] h-1 bg-black/30" />
           </div>
         )}
 
@@ -184,12 +218,12 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
         {/* Speech bubble */}
         {SPEECH[phase] && !inJail && (
           <div
-            className={`absolute top-16 max-w-xs rounded-2xl border-2 border-black bg-white px-4 py-3 text-sm font-semibold text-black shadow-xl transition-all duration-500 ${
+            className={`absolute top-16 max-w-xs rounded-2xl border-2 border-[#241a2e] bg-[#fdf6e3] px-4 py-3 text-sm font-semibold text-[#241a2e] shadow-xl transition-all duration-500 ${
               grandpaRight ? "left-[54%]" : "left-[18%]"
             }`}
           >
             {SPEECH[phase]}
-            <span className="absolute -bottom-2 left-8 h-4 w-4 rotate-45 border-b-2 border-r-2 border-black bg-white" />
+            <span className="absolute -bottom-2 left-8 h-4 w-4 rotate-45 border-b-2 border-r-2 border-[#241a2e] bg-[#fdf6e3]" />
           </div>
         )}
       </div>

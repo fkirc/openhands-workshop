@@ -57,7 +57,7 @@ export function AppCard({ app, onActivate }: AppCardProps) {
 
         {interactive ? (
           <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-white transition-colors group-hover:text-zinc-300">
-            Watch the prank
+            Learn AI
             <ArrowUpRightIcon className="h-4 w-4" />
           </span>
         ) : (
