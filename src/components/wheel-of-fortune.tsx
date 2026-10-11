@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { WheelCelebration, resumeAudio } from "./wheel-celebration";
 
 interface Prize {
   /** Short text drawn on the wheel. */
@@ -31,6 +32,16 @@ const SEG = 360 / PRIZES.length;
 const R = 185;
 const CX = 200;
 const CY = 200;
+
+/** Rotating, increasingly unhinged headlines. Every spin is a win, so… */
+const HEADLINES = [
+  "CONGRATULATIONS!!!",
+  "INCREDIBLE!!!",
+  "UNBELIEVABLE!!!",
+  "HISTORY HAS BEEN MADE!!!",
+  "AGAIN?! YES, AGAIN!!!",
+  "ABSOLUTELY RIDICULOUS!!!",
+];
 
 function polar(r: number, deg: number) {
   const a = ((deg - 90) * Math.PI) / 180;
@@ -67,6 +78,8 @@ export function WheelOfFortune() {
   const [wins, setWins] = useState(0);
   const [history, setHistory] = useState<Prize[]>([]);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [celebrations, setCelebrations] = useState(0);
   const pending = useRef(0);
 
   useEffect(() => {
@@ -83,10 +96,14 @@ export function WheelOfFortune() {
     setWins((w) => w + 1);
     setHistory((h) => [prize, ...h].slice(0, 8));
     setSpinning(false);
-  }, []);
+    if (!reducedMotion) setCelebrations((c) => c + 1);
+  }, [reducedMotion]);
 
   const spin = useCallback(() => {
     if (spinning) return;
+
+    // Unlock audio inside the click gesture so the fanfare can play later.
+    if (!reducedMotion) resumeAudio();
 
     // Land on a random wedge, nudged within its own slice so it never spills.
     const index = Math.floor(Math.random() * PRIZES.length);
@@ -117,6 +134,26 @@ export function WheelOfFortune() {
 
   return (
     <div className="mt-8 flex flex-col items-center gap-6">
+      <WheelCelebration
+        fireKey={celebrations}
+        muted={muted}
+        enabled={!reducedMotion}
+      />
+      {celebrations > 0 && !reducedMotion && (
+        <div key={celebrations} className="wof-flash" aria-hidden="true" />
+      )}
+
+      <div className="flex w-full max-w-[420px] items-center justify-end">
+        <button
+          type="button"
+          onClick={() => setMuted((m) => !m)}
+          aria-pressed={muted}
+          className="rounded-full border border-white/15 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-300 backdrop-blur-md transition hover:border-white/30 hover:text-white"
+        >
+          {muted ? "🔇 Sound off" : "🔊 Sound on"}
+        </button>
+      </div>
+
       <div className="relative w-full max-w-[420px]">
         <svg
           viewBox="0 0 400 400"
@@ -211,10 +248,13 @@ export function WheelOfFortune() {
             <p className="relative text-sm uppercase tracking-[0.25em] text-emerald-300">
               🎉 You win! 🎉
             </p>
+            <p className="wof-headline relative mt-1 text-xs font-bold uppercase tracking-[0.3em] text-amber-300">
+              {HEADLINES[wins % HEADLINES.length]}
+            </p>
             <p className="relative mt-2 text-2xl font-semibold text-white">{result.full}</p>
             <p className="relative mt-2 text-sm text-zinc-300">{result.claim}</p>
             <p className="relative mt-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
-              Claimable right now · cost: €0.00
+              Claimable right now · cost: €0.00 · no purchase necessary, ever
             </p>
           </div>
         ) : (
