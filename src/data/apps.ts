@@ -9,6 +9,8 @@ export interface App {
   /** Public domain of the app, shown on the card and used for the link. */
   domain: string;
   url: string;
+  /** True when `url` is a route inside this marketplace, false for external sites. */
+  internal?: boolean;
   slogan: string;
   /** Path to the square app icon. */
   icon: string;
@@ -21,6 +23,18 @@ export interface App {
 }
 
 export const APPS: App[] = [
+  {
+    id: "wheel-of-fortune",
+    name: "Wheel of Fortune",
+    domain: "nomomarket.netlify.app/wheel",
+    url: "/wheel",
+    internal: true,
+    slogan: "Every spin wins something free you can actually go do.",
+    icon: "/apps/wheel-icon.svg",
+    card: "/apps/wheel-card.svg",
+    publishedAt: "2026-10-11",
+    popularity: 88,
+  },
   {
     id: "nomo-snake",
     name: "Nomo Snake",

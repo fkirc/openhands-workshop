@@ -1,9 +1,41 @@
 import Image from "next/image";
+import Link from "next/link";
+import type { ReactNode } from "react";
 import type { App } from "@/data/apps";
 import { ArrowUpRightIcon } from "./icons";
 
 interface AppCardProps {
   app: App;
+}
+
+/** Internal routes use client-side navigation; external apps open in a new tab. */
+function AppLink({
+  app,
+  className,
+  children,
+}: {
+  app: App;
+  className?: string;
+  children: ReactNode;
+}) {
+  if (app.internal) {
+    return (
+      <Link href={app.url} className={className}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a
+      href={app.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      {children}
+    </a>
+  );
 }
 
 export function AppCard({ app }: AppCardProps) {
@@ -32,28 +64,24 @@ export function AppCard({ app }: AppCardProps) {
           </span>
           <div className="min-w-0">
             <h3 className="truncate font-semibold text-white">{app.name}</h3>
-            <a
-              href={app.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <AppLink
+              app={app}
               className="block truncate text-sm text-zinc-400 transition-colors hover:text-zinc-200"
             >
               {app.domain}
-            </a>
+            </AppLink>
           </div>
         </div>
 
         <p className="text-sm leading-6 text-zinc-400">{app.slogan}</p>
 
-        <a
-          href={app.url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <AppLink
+          app={app}
           className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-white transition-colors hover:text-zinc-300"
         >
           Open app
           <ArrowUpRightIcon className="h-4 w-4" />
-        </a>
+        </AppLink>
       </div>
     </article>
   );

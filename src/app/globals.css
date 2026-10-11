@@ -234,3 +234,105 @@ body {
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Wheel of Fortune: winning card pop + confetti burst                 */
+/* ------------------------------------------------------------------ */
+
+.wof-pop {
+  animation: wof-pop 0.35s ease-out both;
+}
+
+.wof-confetti {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: wof-fall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+
+@keyframes wof-pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes wof-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(180px) rotate(420deg);
+    opacity: 0;
+  }
+}
+
+/* Full-screen celebration flash */
+.wof-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 214, 0, 0.5) 35%,
+    rgba(255, 45, 149, 0.25) 60%,
+    transparent 75%
+  );
+  animation: wof-flash 0.5s ease-out both;
+}
+
+@keyframes wof-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+/* Headline wiggle */
+.wof-headline {
+  animation: wof-wiggle 0.6s ease-in-out 3;
+}
+
+@keyframes wof-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-3deg) scale(1.08);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wof-pop,
+  .wof-confetti,
+  .wof-flash,
+  .wof-headline {
+    animation: none;
+  }
+}
