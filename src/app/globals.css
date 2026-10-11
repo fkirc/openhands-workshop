@@ -188,3 +188,55 @@ body {
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Wheel of Fortune: winning card pop + confetti burst                 */
+/* ------------------------------------------------------------------ */
+
+.wof-pop {
+  animation: wof-pop 0.35s ease-out both;
+}
+
+.wof-confetti {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: wof-fall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+
+@keyframes wof-pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes wof-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(180px) rotate(420deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wof-pop,
+  .wof-confetti {
+    animation: none;
+  }
+}
