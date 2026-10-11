@@ -4,6 +4,7 @@ import { Marketplace } from "@/components/marketplace";
 import { PsychedelicBackground } from "@/components/psychedelic-bg";
 import { Rocket } from "@/components/rocket";
 import { WalkingCat } from "@/components/walking-cat";
+import { DanubeTemperature } from "@/components/danube-temperature";
 
 export default function Home() {
   const apps = getApps();
@@ -22,6 +23,8 @@ export default function Home() {
           </div>
           <Clock />
         </section>
+
+        <DanubeTemperature />
 
         <Marketplace apps={apps} />
       </main>
