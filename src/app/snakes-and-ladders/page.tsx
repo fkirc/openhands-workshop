@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PsychedelicBackground } from "@/components/psychedelic-bg";
-import { SnakesAndLadders } from "@/components/snakes-and-ladders";
+import { InviteGate } from "@/components/invite-gate";
 
 export const metadata: Metadata = {
   title: "Austrian Snakes & Ladders · High Roller Casino",
   description:
-    "A casino-lit Austrian board game for 2–4 players. Climb the ladders, dodge the snakes, roll the big dice, reach square 100.",
+    "A casino-lit Austrian board game for 2–4 players. Invite a friend with a link, roll the big dice, climb the ladders, dodge the snakes.",
 };
 
 export default function SnakesAndLaddersPage() {
@@ -31,12 +31,12 @@ export default function SnakesAndLaddersPage() {
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
               Two to four players, one felt table, casino lights and a very big
-              die. The ladders are lifts, the snakes are your own alpine
-              decisions. Reach square 100 and take the pot.
+              die. Invite a friend with a link and take turns on the same game —
+              the ladders are lifts, the snakes are your own alpine decisions.
             </p>
           </div>
 
-          <SnakesAndLadders />
+          <InviteGate />
         </section>
       </main>
     </div>
