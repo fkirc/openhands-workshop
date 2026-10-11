@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { App } from "@/data/apps";
 import { ArrowUpRightIcon } from "./icons";
+import { TagChip } from "./tag-chip";
 
 interface AppCardProps {
   app: App;
@@ -44,6 +45,14 @@ export function AppCard({ app }: AppCardProps) {
         </div>
 
         <p className="text-sm leading-6 text-zinc-400">{app.slogan}</p>
+
+        {app.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {app.tags.map((tag) => (
+              <TagChip key={tag} label={tag} />
+            ))}
+          </div>
+        )}
 
         <a
           href={app.url}
