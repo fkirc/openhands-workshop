@@ -21,7 +21,7 @@ const END_AT = 20000;
 const SPEECH: Record<Phase, string | null> = {
   enter: "I may be old but I still got you hacked hahaha",
   mask: "Time to get to work...",
-  spray: "Hahaha! Every app goes black!",
+  spray: "I'm deleting your apps! One by one! Hahaha!",
   police: "Stop right there, you scoundrel!",
   jail: "Aww, busted...",
   clean: "Alright, alright, let me clean this up.",
@@ -159,22 +159,32 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
       </button>
 
       <div className="relative mx-auto w-full max-w-5xl px-4 py-10">
-        <h2 className="mb-6 text-center text-2xl font-bold tracking-tight text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.8)] sm:text-3xl">
+        <h2 className="mb-4 text-center text-2xl font-bold tracking-tight text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.8)] sm:text-3xl">
           Grandpa Explains AI
         </h2>
 
+        {/* Speech bubble sits above the stage so the characters stay fully visible. */}
+        {SPEECH[phase] && (
+          <div className="mx-auto mb-6 max-w-md rounded-2xl border-2 border-[#241a2e] bg-[#fdf6e3] px-4 py-3 text-center text-sm font-semibold text-[#241a2e] shadow-xl sm:text-base">
+            {SPEECH[phase]}
+          </div>
+        )}
+
         {inJail ? (
-          <div className="mx-auto h-[46vh] min-h-[260px] w-full max-w-3xl">
-            <JailCell>
-              <div className="absolute inset-0 flex items-end justify-center gap-6 pb-2">
-                <div className={`${characterBox} translate-x-4`}>
-                  <OldMan mask prop="none" />
+          // Cop stands outside the cell; only grandpa is locked inside.
+          <div className="mx-auto flex max-w-3xl items-end justify-center gap-6">
+            <div className="h-[46vh] min-h-[260px] w-[58%]">
+              <JailCell>
+                <div className="absolute inset-0 flex items-end justify-center pb-2">
+                  <div className={characterBox}>
+                    <OldMan mask prop="none" />
+                  </div>
                 </div>
-                <div className={`${characterBox} -translate-x-4`}>
-                  <Cop mode="jail" />
-                </div>
-              </div>
-            </JailCell>
+              </JailCell>
+            </div>
+            <div className={`${characterBox} mb-2 shrink-0`}>
+              <Cop mode="jail" />
+            </div>
           </div>
         ) : (
           // Point-and-click "scene": a framed stage with a sky-to-floor backdrop.
@@ -214,18 +224,6 @@ export function GrandpaPrank({ apps, onDone }: { apps: App[]; onDone: () => void
             </div>
           )}
         </div>
-
-        {/* Speech bubble */}
-        {SPEECH[phase] && !inJail && (
-          <div
-            className={`absolute top-16 max-w-xs rounded-2xl border-2 border-[#241a2e] bg-[#fdf6e3] px-4 py-3 text-sm font-semibold text-[#241a2e] shadow-xl transition-all duration-500 ${
-              grandpaRight ? "left-[54%]" : "left-[18%]"
-            }`}
-          >
-            {SPEECH[phase]}
-            <span className="absolute -bottom-2 left-8 h-4 w-4 rotate-45 border-b-2 border-r-2 border-[#241a2e] bg-[#fdf6e3]" />
-          </div>
-        )}
       </div>
     </div>
   );
