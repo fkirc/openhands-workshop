@@ -524,6 +524,7 @@ body {
 }
 
 .pinball-marquee {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -533,6 +534,46 @@ body {
   background: linear-gradient(180deg, #d63b3f 0%, #a81f24 100%);
   border: 2px solid #ffd987;
   box-shadow: 0 0 18px rgba(255, 217, 135, 0.5);
+}
+
+.pinball-mute {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 2px solid #ffd987;
+  background: rgba(20, 12, 8, 0.35);
+  color: #fff4d6;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #6e1418;
+  transition: transform 90ms ease, box-shadow 90ms ease, background 90ms ease;
+}
+
+.pinball-mute:hover {
+  background: rgba(20, 12, 8, 0.5);
+}
+
+.pinball-mute:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #6e1418;
+}
+
+.pinball-mute[aria-pressed="false"] {
+  border-color: #b98a4a;
+  background: rgba(20, 12, 8, 0.6);
+  color: #d8c79a;
+}
+
+.pinball-mute__label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .pinball-marquee__title {
