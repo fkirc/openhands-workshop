@@ -27,7 +27,7 @@ corepack pnpm run develop
 
 If 12000 already answers, reuse it instead of starting a second server.
 
-`allowedDevOrigins` in `next.config.ts` must allow the work-host domain (`*.prod-runtime.all-hands.dev`). If it is pinned to a single ephemeral subdomain, the dev server blocks its own HMR/dev resources for every other sandbox: the page still renders, but never hydrates, so no client component (dropdowns, filters, etc.) responds to clicks. After changing `allowedDevOrigins`, restart the dev server.
+Use the `https://<identifier>.prod-runtime.all-hands.dev/` URL as is; `next.config.ts` already allows it.
 
 The sandbox is remote, so `http://localhost:12000/` is NOT reachable for the user (and a preview-URL of it would not be usable). Port 12000 is pre-exposed by OpenHands under the work-host URL from the environment, so provide that preview-URL within your PRs, e.g. `https://<identifier>.prod-runtime.all-hands.dev/`.
 
@@ -49,8 +49,7 @@ If a screenshot shows the wrong state, iterate with targeted navigation or inter
 Never use a Playwright MCP server (or similar browser-automation MCP) for this — always prefer the CLI/script approach above.
 
 Hydration gotchas (cost real time, learn from them):
-- `allowedDevOrigins` in `next.config.ts` must cover the work-host URL, or the dev server blocks its own client resources and the page never hydrates: buttons stay dead even though clicks reach the DOM. It currently uses the wildcard `**.prod-runtime.all-hands.dev`.
-- Do NOT stub `Math.random` in `page.addInitScript` to make a page deterministic. Overriding it before the Next.js dev client boots breaks hydration (same dead-click symptom). Seed randomness only after the app is interactive, or read the value under test from the rendered DOM instead.
+- Do NOT stub `Math.random` in `page.addInitScript` to make a page deterministic. Overriding it before the Next.js dev client boots breaks hydration (buttons stay dead). Seed randomness only after the app is interactive, or read the value under test from the rendered DOM instead.
 - A slow first paint in `next dev` can look like a dead page; poll by actually clicking until state changes before concluding a click handler is broken.
 
 Retention of screenshots:
