@@ -365,26 +365,26 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Wheel of Fortune: winning card pop + confetti burst                 */
+/* Snakes & Ladders: event card pop + celebration flash               */
 /* ------------------------------------------------------------------ */
 
-.wof-pop {
-  animation: wof-pop 0.35s ease-out both;
+.snl-pop {
+  animation: snl-pop 0.35s ease-out both;
 }
 
-.wof-confetti {
+.snl-confetti {
   position: absolute;
   top: 0;
   width: 8px;
   height: 12px;
   border-radius: 2px;
   opacity: 0;
-  animation-name: wof-fall;
+  animation-name: snl-fall;
   animation-timing-function: ease-in;
   animation-iteration-count: infinite;
 }
 
-@keyframes wof-pop {
+@keyframes snl-pop {
   from {
     transform: scale(0.92);
     opacity: 0;
@@ -395,7 +395,7 @@ body {
   }
 }
 
-@keyframes wof-fall {
+@keyframes snl-fall {
   0% {
     transform: translateY(-10px) rotate(0deg);
     opacity: 0;
@@ -410,7 +410,7 @@ body {
 }
 
 /* Full-screen celebration flash */
-.wof-flash {
+.snl-flash {
   position: fixed;
   inset: 0;
   z-index: 40;
@@ -422,10 +422,10 @@ body {
     rgba(255, 45, 149, 0.25) 60%,
     transparent 75%
   );
-  animation: wof-flash 0.5s ease-out both;
+  animation: snl-flash 0.5s ease-out both;
 }
 
-@keyframes wof-flash {
+@keyframes snl-flash {
   0% {
     opacity: 0;
     transform: scale(0.6);
@@ -440,11 +440,11 @@ body {
 }
 
 /* Headline wiggle */
-.wof-headline {
-  animation: wof-wiggle 0.6s ease-in-out 3;
+.snl-headline {
+  animation: snl-wiggle 0.6s ease-in-out 3;
 }
 
-@keyframes wof-wiggle {
+@keyframes snl-wiggle {
   0%,
   100% {
     transform: rotate(0deg) scale(1);
@@ -458,10 +458,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wof-pop,
-  .wof-confetti,
-  .wof-flash,
-  .wof-headline {
+  .snl-pop,
+  .snl-confetti,
+  .snl-flash,
+  .snl-headline {
     animation: none;
   }
 }

@@ -31,14 +31,14 @@ export interface App {
 
 export const APPS: App[] = [
   {
-    id: "wheel-of-fortune",
-    name: "Wheel of Fortune",
-    domain: "nomomarket.netlify.app/wheel",
-    url: "/wheel",
+    id: "snakes-and-ladders",
+    name: "Austrian Snakes & Ladders",
+    domain: "nomomarket.netlify.app/snakes-and-ladders",
+    url: "/snakes-and-ladders",
     internal: true,
-    slogan: "The wheel where you always win — with real Austrian prizes.",
-    icon: "/apps/wheel-icon.svg",
-    card: "/apps/wheel-card.svg",
+    slogan: "Climb the Austrian ladders, dodge the Austrian snakes, reach 100.",
+    icon: "/apps/snl-icon.svg",
+    card: "/apps/snl-card.svg",
     publishedAt: "2026-10-11",
     popularity: 88,
     tags: ["Games"],

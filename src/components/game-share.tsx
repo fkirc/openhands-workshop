@@ -2,48 +2,64 @@
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 
-/** Minimal prize shape the share grid needs. */
-export interface SharePrize {
-  emoji: string;
-  short: string;
-  color: string;
+export type MoveKind = "move" | "ladder" | "snake";
+
+/** One roll of the dice, as the share grid needs to see it. */
+export interface ShareMove {
+  roll: number;
+  kind: MoveKind;
+  square: number;
 }
 
 interface Props {
-  /** Every spin so far, oldest first. Everyone always wins, so all of these are wins. */
-  history: SharePrize[];
-  wins: number;
+  moves: ShareMove[];
+  /** Furthest square reached this run. */
+  best: number;
+  won: boolean;
+  /** Squares on the board (100). */
+  total: number;
 }
 
-const RED = "🟥";
-const WHITE = "⬜";
-const MAX_SQUARES = 30;
+const GLYPH: Record<MoveKind, string> = { move: "🟥", ladder: "🪜", snake: "🐍" };
+const MAX_GLYPHS = 40;
+const FINISH = "🏆";
 
-/** The spoiler-free result grid: one red-white square per spin. */
-function grid(count: number) {
-  const n = Math.min(count, MAX_SQUARES);
-  return Array.from({ length: n }, (_, i) => (i % 2 === 0 ? RED : WHITE)).join("");
+function buildGrid(moves: ShareMove[]) {
+  const shown = moves.slice(-MAX_GLYPHS).map((m) => GLYPH[m.kind]);
+  return shown.join("");
 }
 
-function buildShareText(history: SharePrize[], wins: number, url: string) {
-  if (wins === 0) {
+function buildShareText(moves: ShareMove[], best: number, won: boolean, total: number, url: string) {
+  if (moves.length === 0) {
     return [
-      "🎡 Wheel of Fortune",
-      "The only wheel where everyone always wins.",
-      "I haven't spun yet — help me break the losing streak I can't have.",
+      "🎲🇦🇹 Austrian Snakes & Ladders",
+      "The board game where you can't lose the Austrian way of life.",
+      "I haven't rolled yet. Alpine luck is loading…",
       "",
-      `Play (and win) too → ${url}`,
+      `Play free → ${url}`,
     ].join("\n");
   }
 
-  const medals = history.slice(-8).map((p) => p.emoji).join("");
+  const ladders = moves.filter((m) => m.kind === "ladder").length;
+  const snakes = moves.filter((m) => m.kind === "snake").length;
+  const grid = buildGrid(moves);
+
+  if (won) {
+    return [
+      grid,
+      `${FINISH} Austrian Snakes & Ladders — reached square ${total} in ${moves.length} rolls!`,
+      `${ladders} ladder${ladders === 1 ? "" : "s"} up, ${snakes} snake${snakes === 1 ? "" : "s"} down. Free, obviously.`,
+      "",
+      `Can you climb it faster? → ${url}`,
+    ].join("\n");
+  }
+
   return [
-    grid(wins),
-    `🎡 Wheel of Fortune — ${wins} ${wins === 1 ? "spin" : "spins"}, ${wins} ${wins === 1 ? "win" : "wins"}, 0 losses.`,
-    `Today I won: ${medals}`,
-    "€0.00 spent. Every prize is free and real.",
+    grid,
+    `🎲🇦🇹 Austrian Snakes & Ladders — reached square ${best}/${total} in ${moves.length} rolls.`,
+    `${ladders} ladder${ladders === 1 ? "" : "s"} up, ${snakes} snake${snakes === 1 ? "" : "s"} down. Free to play.`,
     "",
-    `Your turn — you literally can't lose → ${url}`,
+    `Beat my run → ${url}`,
   ].join("\n");
 }
 
@@ -82,7 +98,7 @@ function useLocationKey() {
   );
 }
 
-export function WheelShare({ history, wins }: Props) {
+export function GameShare({ moves, best, won, total }: Props) {
   const [status, setStatus] = useState<"idle" | "copied" | "shared" | "failed">("idle");
   const locationKey = useLocationKey();
 
@@ -99,21 +115,21 @@ export function WheelShare({ history, wins }: Props) {
     };
   }, [locationKey]);
 
-  const playUrl = `${origin}/wheel`;
+  const playUrl = `${origin}/snakes-and-ladders`;
   const shareText = useMemo(
-    () => buildShareText(history, wins, playUrl),
-    [history, wins, playUrl],
+    () => buildShareText(moves, best, won, total, playUrl),
+    [moves, best, won, total, playUrl],
   );
 
   const challengeText = useMemo(() => {
-    const beat = Math.max(wins, 1);
+    const target = Math.max(best, 1);
     return [
-      `🎡 I dare you to beat my ${beat} ${beat === 1 ? "win" : "wins"} on the Wheel of Fortune.`,
-      "Every spin wins, so good luck trying to lose.",
+      `🎲 I dare you to beat my Austrian Snakes & Ladders run — square ${target}/${total}.`,
+      "Watch out: one wrong roll and a snake drops you right back.",
       "",
-      `Accept the challenge → ${playUrl}?challenge=${beat}`,
+      `Accept the challenge → ${playUrl}?challenge=${target}`,
     ].join("\n");
-  }, [playUrl, wins]);
+  }, [best, playUrl, total]);
 
   const flash = useCallback((s: typeof status) => {
     setStatus(s);
@@ -123,7 +139,7 @@ export function WheelShare({ history, wins }: Props) {
   const onShare = useCallback(async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Wheel of Fortune", text: shareText, url: playUrl });
+        await navigator.share({ title: "Austrian Snakes & Ladders", text: shareText, url: playUrl });
         flash("shared");
         return;
       } catch {
@@ -137,7 +153,7 @@ export function WheelShare({ history, wins }: Props) {
     flash((await copyText(challengeText)) ? "copied" : "failed");
   }, [challengeText, flash]);
 
-  const beat = Math.max(wins, 1);
+  const target = Math.max(best, 1);
   const label =
     status === "copied"
       ? "Copied! Paste it anywhere."
@@ -151,17 +167,16 @@ export function WheelShare({ history, wins }: Props) {
     <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/50 p-5 backdrop-blur-md">
       {challengeAt !== null && (
         <p className="mb-4 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-center text-sm text-amber-200">
-          🥊 {challengeFrom ? `${challengeFrom} dares you` : "You've been dared"} to beat{" "}
-          <span className="font-semibold">
-            {challengeAt} {challengeAt === 1 ? "win" : "wins"}
-          </span>
-          . Good luck losing — every spin wins.
+          🥊 {challengeFrom ? `${challengeFrom} dares you` : "You've been dared"} to reach{" "}
+          <span className="font-semibold">square {challengeAt}</span>. Mind the snakes.
         </p>
       )}
 
       <div className="flex items-baseline justify-between">
-        <h2 className="font-semibold text-white">Share your streak</h2>
-        <span className="text-sm text-zinc-400">{wins} {wins === 1 ? "win" : "wins"}</span>
+        <h2 className="font-semibold text-white">Share your run</h2>
+        <span className="text-sm text-zinc-400">
+          square {best}/{total}
+        </span>
       </div>
 
       <pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-sm leading-relaxed text-zinc-200">
@@ -174,7 +189,7 @@ export function WheelShare({ history, wins }: Props) {
           onClick={onShare}
           className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow transition hover:-translate-y-0.5 hover:bg-zinc-100"
         >
-          📤 Share my wins
+          📤 Share my run
         </button>
         <button
           type="button"
@@ -190,8 +205,8 @@ export function WheelShare({ history, wins }: Props) {
       </p>
 
       <p className="mt-1 text-xs text-zinc-500">
-        Spoiler-free: friends see your squares, not your prizes. They can&apos;t lose either.
-        Challenge link dares them to beat {beat}.
+        One glyph per roll: 🟥 a move, 🪜 a ladder up, 🐍 a snake down. The challenge link dares a
+        friend to beat square {target}.
       </p>
     </div>
   );

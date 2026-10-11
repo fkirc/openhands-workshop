@@ -150,12 +150,12 @@ const PALETTE = [
   "#00b894",
 ];
 
-const EMOJI = ["🇦🇹", "🎉", "🎊", "🍰", "☕", "🎿", "🏔️", "💥", "✨", "🍺"];
+const EMOJI = ["🇦🇹", "🎉", "🎊", "🎲", "🏔️", "💥", "✨", "⛰️", "🍰", "☕"];
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
-export function WheelCelebration({
+export function Celebration({
   fireKey,
   muted,
   enabled,
