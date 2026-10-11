@@ -26,7 +26,14 @@ Tooling: Playwright is a devDependency; its browser binaries are not, so run `pn
 
 Navigation: reach page state via route and URL params; fall back to clicks only for state the URL can't set.
 
-Verifying a change: screenshot the same state before and after, check the goal is reached, then compare for unwanted side effects. Stop iterating once screenshots stop adding evidence.
+Procedure for verifying a change:
+1. Before the change, screenshot the page in the state you are about to modify (the baseline).
+2. Make the change.
+3. After the change, screenshot the same state.
+4. Verify whether the goal has been reached.
+5. If yes, compare the before/after screenshots to detect unwanted UI side effects elsewhere on the page.
+
+Stop iterating once screenshots stop adding evidence.
 
 Never use a Playwright MCP server (or similar browser-automation MCP) for this — always prefer the CLI/script approach above.
 
