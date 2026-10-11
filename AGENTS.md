@@ -74,18 +74,3 @@ What should never be missing:
 
 Apps live as routes under `src/app/<app>/` and are registered in `src/data/apps.ts`.
 The route needs `output: "export"`-friendly, client-rendered React.
-
-### ShadowTales (`/shadowtales`)
-
-A personalisable, interactive shadow theatre. See [SHADOWTALES.md](SHADOWTALES.md).
-
-- Domain code in `src/lib/shadowtales/` (types, style presets, demo stories,
-  rule-based generator, "what-if" variants, localStorage store).
-- UI in `src/components/shadowtales/` (TheaterPlayer, SceneRenderer,
-  CharacterSilhouette, CharacterEditor, StoryForm, Timeline, StyleSelector,
-  SceneEditor, WhatIfPanel, StageBackdrop, StageEffects).
-- Theatre CSS animations live in `src/app/shadowtales/shadowtales.css`.
-- State is in the URL (`?view=`, `?story=`, `?scene=`), so pages are reproducible
-  for screenshots and Playwright.
-- Verify flows with Playwright scripts; the demo and an interactive example are
-  seeded into localStorage on first load.
