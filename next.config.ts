@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/danube-temp",
+        destination:
+          "https://www.wien.gv.at/assets/sonderloesungen/wassertemperatur/wassertemperatur.xml",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
