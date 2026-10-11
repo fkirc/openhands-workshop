@@ -7,22 +7,24 @@ interface Prize {
   short: string;
   /** Full prize name shown in the result. */
   full: string;
+  /** The free, real-life way to claim it. */
+  claim: string;
   emoji: string;
   color: string;
 }
 
-/** Every slot is a winner — there is no losing wedge. */
+/** Every slot is a real prize you can claim today, and every slot is free. */
 const PRIZES: Prize[] = [
-  { short: "Compliment", full: "A Sincere Compliment", emoji: "💬", color: "#ff2d95" },
-  { short: "Applause", full: "Ten Seconds of Thunderous Applause", emoji: "🎺", color: "#ff7a00" },
-  { short: "Tiny Crown", full: "A Tiny Crown, Fits Perfectly", emoji: "👑", color: "#ffd400" },
-  { short: "Gold Bubble", full: "One Golden Bubble, Hand-Delivered", emoji: "✨", color: "#22e06a" },
-  { short: "Nap Time", full: "Official Permission to Nap", emoji: "💤", color: "#00d4ff" },
-  { short: "Legend", full: "Instant Legend Status", emoji: "⭐", color: "#7a5cff" },
-  { short: "Good Vibes", full: "A Lifetime Supply of Good Vibes", emoji: "🌈", color: "#b14cff" },
-  { short: "Sticker", full: "One Shiny Lucky Sticker", emoji: "🍀", color: "#ff4d4d" },
-  { short: "Fuzzies", full: "The Warm Fuzzies, All of Them", emoji: "🤗", color: "#00e0b0" },
-  { short: "Brag Rights", full: "Unlimited Bragging Rights", emoji: "🏆", color: "#ff9de0" },
+  { short: "Loud Yawn", full: "One Extremely Satisfying Yawn", claim: "Open your mouth as wide as it goes. Let it out. No holding back.", emoji: "🥱", color: "#ff2d95" },
+  { short: "Stretch", full: "A Full-Body Stretch, No Time Limit", claim: "Stand up, reach for the ceiling, and stay there as long as you like.", emoji: "🙆", color: "#ff7a00" },
+  { short: "Deep Breath", full: "One Big, Slow, Free Deep Breath", claim: "In through the nose, out through the mouth. Air is still free.", emoji: "🌬️", color: "#ffd400" },
+  { short: "Sniff Coffee", full: "A Long Sniff of Fresh Coffee", claim: "Brew a cup or loiter near someone who did. Just smell it.", emoji: "☕", color: "#22e06a" },
+  { short: "Kind Text", full: "One Unprompted Nice Text to a Friend", claim: "No occasion needed. Send it and watch them smile.", emoji: "💬", color: "#00d4ff" },
+  { short: "Silly Dance", full: "Sixty Seconds of Dancing Like Nobody's Watching", claim: "There is no audience. There never was. Go wild.", emoji: "🕺", color: "#7a5cff" },
+  { short: "Go Outside", full: "Two Minutes of Standing Outside Doing Nothing", claim: "Go out, look up, breathe, come back. That's the whole task.", emoji: "🌤️", color: "#b14cff" },
+  { short: "Drink Water", full: "A Tall Glass of Water, On the House", claim: "Your tap has been giving this away for years.", emoji: "💧", color: "#ff4d4d" },
+  { short: "Thank You", full: "One Sincere Thank You to Someone", claim: "Pick a person. Mean it. It costs you nothing and buys you a lot.", emoji: "🙏", color: "#00e0b0" },
+  { short: "Do Nothing", full: "An Uninterrupted Moment of Absolutely Nothing", claim: "Sit down, do nothing, stare at the wall. You earned this.", emoji: "😌", color: "#ff9de0" },
 ];
 
 const SEG = 360 / PRIZES.length;
@@ -158,7 +160,7 @@ export function WheelOfFortune() {
                 <text
                   x={label.x}
                   y={label.y}
-                  fontSize="13"
+                  fontSize="12"
                   fontWeight="700"
                   fill="#1a0a2e"
                   textAnchor="middle"
@@ -210,22 +212,23 @@ export function WheelOfFortune() {
               🎉 You win! 🎉
             </p>
             <p className="relative mt-2 text-2xl font-semibold text-white">{result.full}</p>
-            <p className="relative mt-2 text-sm text-zinc-400">
-              Of course you do. Everyone always does.
+            <p className="relative mt-2 text-sm text-zinc-300">{result.claim}</p>
+            <p className="relative mt-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
+              Claimable right now · cost: €0.00
             </p>
           </div>
         ) : (
           <p className="pt-6 text-center text-sm text-zinc-400">
-            Give it a spin — every one of the {PRIZES.length} slots is a winner.
+            Ten prizes. All free. All claimable today. Every slot is a winner.
           </p>
         )}
       </div>
 
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/50 p-5 backdrop-blur-md">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-semibold text-white">Winners today</h2>
+          <h2 className="font-semibold text-white">Free things won today</h2>
           <span className="text-sm text-zinc-400">
-            {wins} {wins === 1 ? "win" : "wins"} · 0 losses
+            {wins} {wins === 1 ? "win" : "wins"} · 0 losses · €0.00 spent
           </span>
         </div>
         {history.length > 0 ? (
@@ -241,7 +244,7 @@ export function WheelOfFortune() {
           </ul>
         ) : (
           <p className="mt-3 text-sm text-zinc-400">
-            No losers to report. Ever. That&apos;s the whole point.
+            Nothing won yet. Spin it — the whole thing is free.
           </p>
         )}
       </div>

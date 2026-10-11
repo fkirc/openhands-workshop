@@ -29,7 +29,7 @@ export const APPS: App[] = [
     domain: "nomomarket.netlify.app/wheel",
     url: "/wheel",
     internal: true,
-    slogan: "Spin the wheel — everyone always wins.",
+    slogan: "Every spin wins something free you can actually go do.",
     icon: "/apps/wheel-icon.svg",
     card: "/apps/wheel-card.svg",
     publishedAt: "2026-10-11",

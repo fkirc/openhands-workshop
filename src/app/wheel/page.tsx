@@ -29,8 +29,8 @@ export default function WheelPage() {
               Wheel of Fortune
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-zinc-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              The only wheel where the odds are rigged in your favour — every
-              single time.
+              The only wheel where the odds are rigged in your favour. Every
+              prize is something free you can actually go and do.
             </p>
           </div>
 

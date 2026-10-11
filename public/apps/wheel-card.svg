@@ -14,7 +14,7 @@
   <rect width="1200" height="480" fill="url(#glow)"/>
   <text x="80" y="205" fill="#ffffff" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="2">WHEEL OF</text>
   <text x="80" y="290" fill="#ffffff" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="2">FORTUNE</text>
-  <text x="82" y="345" fill="#ffd400" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="600">Everyone always wins.</text>
+  <text x="82" y="345" fill="#ffd400" font-family="Geist, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="600">Every prize is free. Every spin wins.</text>
   <g transform="translate(900,240) scale(2.55)">
     <path d="M0.00,0.00 L0.00,-62.00 A62.00,62.00 0 0 1 43.84,-43.84 Z" fill="#ff2d95"/>
     <path d="M0.00,0.00 L43.84,-43.84 A62.00,62.00 0 0 1 62.00,0.00 Z" fill="#ff7a00"/>
